@@ -116,6 +116,8 @@ class Session:
         self.rng = rng
         self.user = rng.choice(USERS)
         self.host = f"dev-{self.user}-{rng.randint(1, 3):02d}"
+        # stable per host, like the machine ID Elastic Agent sends; Entity Store V2 needs host.id to score the user
+        self.host_id = uuid.uuid5(uuid.NAMESPACE_DNS, f"{self.host}.loadgen.invalid").hex
         self.project = rng.choice(PROJECTS)
         self.sid = str(uuid.uuid4())
         self.cwd = f"/home/{self.user}/src/{self.project}"
@@ -128,7 +130,7 @@ class Session:
         cc.update({"uuid": str(uuid.uuid4()), "parentUuid": self.parent, "sessionId": self.sid,
                    "timestamp": _now(), "cwd": self.cwd, "version": "2.1.0", "isSidechain": False})
         self.parent = cc["uuid"]
-        return {"log": {"file": {"path": self.path}}, "host": {"name": self.host, "hostname": self.host},
+        return {"log": {"file": {"path": self.path}}, "host": {"name": self.host, "hostname": self.host, "id": self.host_id},
                 "input": {"type": "filestream"}, "tags": tags + [self.ns_tag], "claude_code": cc}
 
     def turn(self, extra_lines, adversarial_rate, secret_rate, tags, unique=True):
@@ -175,7 +177,7 @@ class GeminiSession(Session):
 
     def _rec(self, g, tags):
         g.setdefault("id", str(uuid.uuid4())); g["timestamp"] = _now()
-        return {"log": {"file": {"path": self.path}}, "host": {"name": self.host, "hostname": self.host},
+        return {"log": {"file": {"path": self.path}}, "host": {"name": self.host, "hostname": self.host, "id": self.host_id},
                 "input": {"type": "filestream"}, "tags": tags + [self.ns_tag], "gemini_cli": g}
 
     def _tokens(self):
