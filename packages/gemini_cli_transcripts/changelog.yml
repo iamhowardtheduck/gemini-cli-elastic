@@ -1,3 +1,8 @@
+- version: 0.2.4
+  changes:
+  - description: Entity Analytics docs - with Entity Store V2 a user is identified by user.name together with host.id (Elastic Agent adds it), so events without host.id raise only the host risk score; risk scoring is turned on under Security > Manage, Entity analytics.
+    type: enhancement
+    link: https://github.com/iamhowardtheduck/gemini-cli-elastic/pull/1
 - version: 0.2.3
   changes:
   - description: README and description highlight that alerts from the detection rules feed Entity Analytics - every rule keeps user.name and host.name, so its alerts add to user and host risk scores. The companion repository is now iamhowardtheduck/gemini-cli-elastic.
