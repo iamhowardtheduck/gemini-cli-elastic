@@ -97,6 +97,13 @@ elastic-package test pipeline     # against a running stack
 ```
 The docs are generated from `_dev/build/docs/README.md` (`elastic-package build` renders `docs/README.md` with the field tables). Bump `version` in `manifest.yml` and add an entry to `changelog.yml` for every change.
 
+The secret redaction, ML inference pipelines, inference fields, dashboards and detection rules are generated from their Claude Code counterparts by `tools/port_gemini.py`. It reads them from a checkout of [claude-code-elastic](https://github.com/iamhowardtheduck/claude-code-elastic) next to this repository, or from `CLAUDE_REPO`:
+
+```bash
+CLAUDE_REPO=../claude-code-elastic python3 tools/port_gemini.py --check   # exit 1 if a generated file is out of date
+CLAUDE_REPO=../claude-code-elastic python3 tools/port_gemini.py           # rewrite the generated files
+```
+
 ## License
 
 Elastic License 2.0, see [LICENSE.txt](LICENSE.txt).
