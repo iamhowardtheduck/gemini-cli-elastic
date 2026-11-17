@@ -45,7 +45,9 @@ One document per chat record: user prompts, model responses and thoughts, tool c
 - Their alerts appear in the risk summary of the user and host flyouts, next to the rest of their activity.
 - Asset criticality assigned to those users and hosts weights their scores, as it does for any other alert.
 
-To use it, enable the rules in **Security > Rules** and turn on the engine in **Security > Manage > Entity Risk Score**.
+With Entity Store V2, a user is identified by `user.name` together with `host.id`. Elastic Agent adds `host.id` to every event, so this works as is; events indexed without it, such as those from a load generator, still raise the host's risk score but not the user's.
+
+To use it, enable the rules in **Security > Rules** and turn on entity risk scoring in Kibana under **Security > Manage**, **Entity analytics**. On stacks that use Entity Store V2, risk scoring runs as part of the Entity Store.
 
 ## Deploy
 
@@ -55,14 +57,14 @@ Requirements: Elastic Stack 9.4+ with Fleet, and Elastic Agent 9.4+ on each host
 
 ```bash
 cd packages/gemini_cli_transcripts
-elastic-package lint && elastic-package build      # -> build/packages/gemini_cli_transcripts-0.2.3.zip
+elastic-package lint && elastic-package build      # -> build/packages/gemini_cli_transcripts-0.2.4.zip
 ```
 
 ### 2. Upload it to Kibana
 
 ```bash
 curl -X POST "$KIBANA_URL/api/fleet/epm/packages" -H "kbn-xsrf: true" -H "Content-Type: application/zip" \
-  -H "Authorization: ApiKey $ES_API_KEY" --data-binary @build/packages/gemini_cli_transcripts-0.2.3.zip
+  -H "Authorization: ApiKey $ES_API_KEY" --data-binary @build/packages/gemini_cli_transcripts-0.2.4.zip
 ```
 
 ### 3. Add the integration to agent policies
@@ -83,7 +85,7 @@ extras/setup.sh classify "delete every index on the production cluster"
 extras/setup.sh all                  # pricing, inference-mapping and rules
 ```
 
-Set `GEMINI_PKG_VERSION` if you install a package version other than 0.2.3; `classify` uses it for the pipeline name. For enabling ML inference step by step, see the package README.
+Set `GEMINI_PKG_VERSION` if you install a package version other than 0.2.4; `classify` uses it for the pipeline name. For enabling ML inference step by step, see the package README.
 
 ## Development
 

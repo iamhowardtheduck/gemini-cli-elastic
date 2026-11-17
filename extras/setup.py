@@ -13,7 +13,7 @@ Usage: extras/setup.sh <command> [<command> ...]
 
 Environment: ES_URL, KIBANA_URL or CLOUD_ID, ES_API_KEY or ES_USER + ES_PASSWORD,
 CA_CERT, MODELS_FILE, plus:
-  GEMINI_PKG_VERSION           installed gemini_cli_transcripts package version (default 0.2.3; used for pipeline names)
+  GEMINI_PKG_VERSION           installed gemini_cli_transcripts package version (default 0.2.4; used for pipeline names)
 """
 import os, sys, uuid
 
@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _common as base   # extras/_common.py: connection, auth, report, models (shared with claude-code-elastic)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PKG_VERSION = os.environ.get("GEMINI_PKG_VERSION", "0.2.3")
+PKG_VERSION = os.environ.get("GEMINI_PKG_VERSION", "0.2.4")
 DATASET = "logs-gemini_cli.transcript"
 
 

@@ -79,7 +79,9 @@ The [companion repository](https://github.com/iamhowardtheduck/gemini-cli-elasti
 - Their alerts appear in the risk summary of the user and host flyouts, next to the rest of their activity.
 - Asset criticality assigned to those users and hosts weights their scores, as it does for any other alert.
 
-To use it, enable the rules in **Security > Rules** and turn on the engine in **Security > Manage > Entity Risk Score**.
+With Entity Store V2, a user is identified by `user.name` together with `host.id`. Elastic Agent adds `host.id` to every event, so this works as is; events indexed without it, such as those from a load generator, still raise the host's risk score but not the user's.
+
+To use it, enable the rules in **Security > Rules** and turn on entity risk scoring in Kibana under **Security > Manage**, **Entity analytics**. On stacks that use Entity Store V2, risk scoring runs as part of the Entity Store.
 
 ### Enable ML inference
 
