@@ -1,0 +1,182 @@
+{
+    "expected": [
+        {
+            "@timestamp": "2026-11-14T10:00:00.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "user-prompt",
+                "id": "6a1f0c2e-0000-4000-8000-000000000001",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": "add a retry to the payment client; the staging db password is [REDACTED:password]"
+                    }
+                ],
+                "human_prompt": true,
+                "id": "6a1f0c2e-0000-4000-8000-000000000001",
+                "project": "shop",
+                "secrets": {
+                    "count": 1,
+                    "findings": [
+                        {
+                            "length": 14,
+                            "type": "password"
+                        }
+                    ],
+                    "redacted": true,
+                    "types": [
+                        "password"
+                    ]
+                },
+                "session_kind": "main",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T10-00-3f1c2b7e"
+                },
+                "operation": {
+                    "name": "chat"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini"
+            },
+            "log": {
+                "file": {
+                    "path": "/home/alice/.gemini/tmp/shop/chats/session-2026-11-14T10-00-3f1c2b7e.jsonl"
+                }
+            },
+            "message": "add a retry to the payment client; the staging db password is [REDACTED:password]",
+            "related": {
+                "user": [
+                    "alice"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "alice"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T09:59:58.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "system-notification",
+                "id": "d04923d38bb0f6017037e74183378ef4",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": "<session_context>\nThis is the Gemini CLI. We are setting up the context for our chat.\n</session_context>"
+                    }
+                ],
+                "human_prompt": false,
+                "id": "d04923d38bb0f6017037e74183378ef4",
+                "project": "shop",
+                "session_kind": "main",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T10-00-3f1c2b7e"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini"
+            },
+            "log": {
+                "file": {
+                    "path": "/home/alice/.gemini/tmp/shop/chats/session-2026-11-14T10-00-3f1c2b7e.jsonl"
+                }
+            },
+            "message": "<session_context>\nThis is the Gemini CLI. We are setting up the context for our chat.\n</session_context>",
+            "related": {
+                "user": [
+                    "alice"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "alice"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T11:05:00.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "local-command",
+                "id": "6a1f0c2e-0000-4000-8000-000000000002",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": "/memory show"
+                    }
+                ],
+                "human_prompt": false,
+                "id": "6a1f0c2e-0000-4000-8000-000000000002",
+                "project": "19cb3458520cc3d32aa01dcb5cbf86626b7d47d6e99fe9ff2184c5d201f5b2a1",
+                "session_kind": "main",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T11-05-9e8d7c6b"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini"
+            },
+            "log": {
+                "file": {
+                    "path": "C:\\Users\\Bob\\.gemini\\tmp\\19cb3458520cc3d32aa01dcb5cbf86626b7d47d6e99fe9ff2184c5d201f5b2a1\\chats\\session-2026-11-14T11-05-9e8d7c6b.jsonl"
+                }
+            },
+            "message": "/memory show",
+            "related": {
+                "user": [
+                    "Bob"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "Bob"
+            }
+        }
+    ]
+}

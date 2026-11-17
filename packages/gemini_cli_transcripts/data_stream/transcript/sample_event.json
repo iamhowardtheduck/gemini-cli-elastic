@@ -1,0 +1,70 @@
+{
+    "@timestamp": "2026-11-14T10:00:00.000Z",
+    "data_stream": {
+        "dataset": "gemini_cli.transcript",
+        "namespace": "default",
+        "type": "logs"
+    },
+    "ecs": {
+        "version": "9.3.0"
+    },
+    "event": {
+        "action": "user-prompt",
+        "id": "6a1f0c2e-0000-4000-8000-000000000001",
+        "kind": "event"
+    },
+    "gemini_cli": {
+        "content": [
+            {
+                "text": "add a retry to the payment client; the staging db password is [REDACTED:password]"
+            }
+        ],
+        "human_prompt": true,
+        "id": "6a1f0c2e-0000-4000-8000-000000000001",
+        "project": "shop",
+        "secrets": {
+            "count": 1,
+            "findings": [
+                {
+                    "length": 14,
+                    "type": "password"
+                }
+            ],
+            "redacted": true,
+            "types": [
+                "password"
+            ]
+        },
+        "session_kind": "main",
+        "type": "user"
+    },
+    "gen_ai": {
+        "conversation": {
+            "id": "session-2026-11-14T10-00-3f1c2b7e"
+        },
+        "operation": {
+            "name": "chat"
+        },
+        "provider": {
+            "name": "gcp.gemini"
+        },
+        "system": "gcp.gemini"
+    },
+    "log": {
+        "file": {
+            "path": "/home/alice/.gemini/tmp/shop/chats/session-2026-11-14T10-00-3f1c2b7e.jsonl"
+        }
+    },
+    "message": "add a retry to the payment client; the staging db password is [REDACTED:password]",
+    "related": {
+        "user": [
+            "alice"
+        ]
+    },
+    "service": {
+        "name": "gemini-cli"
+    },
+    "user": {
+        "name": "alice"
+    }
+}

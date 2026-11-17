@@ -1,0 +1,25 @@
+- version: 0.2.3
+  changes:
+  - description: README and description highlight that alerts from the detection rules feed Entity Analytics - every rule keeps user.name and host.name, so its alerts add to user and host risk scores. The companion repository is now iamhowardtheduck/gemini-cli-elastic.
+    type: enhancement
+    link: https://github.com/iamhowardtheduck/claude-code-elastic/pull/10
+- version: 0.2.2
+  changes:
+  - description: Same fixes as Claude Code Transcripts 0.2.3 - whole PEM private keys are redacted (not just the BEGIN line); redaction fails closed (text dropped, event tagged secret_redaction_failed); sensitive-file and exfil-site rules and panels match every file and URL of a turn and Windows paths; classifier input capped at 4000 characters.
+    type: bugfix
+    link: https://github.com/iamhowardtheduck/claude-code-elastic/pull/8
+- version: 0.2.1
+  changes:
+  - description: README follows the same structure and setup steps as the Claude Code Transcripts integration (overview, deployment, ML inference steps, validation, troubleshooting, performance), with a sample event. Pipeline errors are tagged preserve_original_event and temporary fields are removed, as in Claude Code Transcripts.
+    type: enhancement
+    link: https://github.com/iamhowardtheduck/claude-code-elastic/pull/8
+- version: 0.2.0
+  changes:
+  - description: Optional ML inference on human prompts (Jina embedding, semantic threat flags, prompt-injection, jailbreak, toxicity, offensive, zero-shot and NER classifiers) with the same models and thresholds as Claude Code Transcripts, switched per policy. Business Analytics (with estimated spend from Google list prices in the gemini-model-pricing lookup, including announced price changes and long-context prices) and Security dashboards; 8 detection rules, the pricing lookup and the embedding mapping via extras/gemini/setup.sh. web_fetch URLs (passed in the prompt argument) are extracted into gemini_cli.tool_input.url.
+    type: enhancement
+    link: https://github.com/iamhowardtheduck/claude-code-elastic/pull/8
+- version: 0.1.0
+  changes:
+  - description: 'Initial release: Gemini CLI chats from ~/.gemini/tmp/<project>/chats/**/*.jsonl (Windows, Linux, macOS, subagent chats) mapped to ECS and gen_ai.*, with secret redaction. Token usage is counted once per model turn, although the CLI re-appends a model record as it grows.'
+    type: enhancement
+    link: https://github.com/iamhowardtheduck/claude-code-elastic/pull/8

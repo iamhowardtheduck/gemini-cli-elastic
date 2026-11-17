@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cover</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:68px;line-height:.98;letter-spacing:-2.6px;margin-top:120px}
+  .sub{font-size:19px;max-width:520px;margin-top:26px}
+  .chips{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap;max-width:560px}
+  #hero{left:660px;top:0;width:620px;height:720px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Models">
+<div class="z">
+  <div class="eyebrow in1">Optional ML inference · <b>the models</b></div>
+  <h1 class="in2">Seven models.<br><span class="b">One job each.</span></h1>
+  <p class="sub in3">Which models read a Gemini CLI prompt after redaction, what each one is, and what it is used for: one embedding endpoint on EIS and six NLP models on your ML nodes.</p>
+  <div class="chips in4"><span class="chip on">inference.yml</span><span class="chip">classify.yml</span><span class="chip">extras/models/models.json</span></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 720 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 640, y: 30, w: 640, h: 660, seed: 6, blobs: 6, thr: .5});
+  const sc = EW.iso(document.getElementById('hero'), {ox: 300, oy: 250, s: .72});
+  sc.rect({x: -30, y: -30, w: 360, d: 330, z: 0, delay: .1});
+  sc.box({x: 0, y: 0, w: 300, d: 270, h: 40, c: 'slate', delay: .15, drop: 120, order: -1000});
+  // the embedding endpoint (blue), then six NLP models
+  sc.box({x: 20, y: 20, w: 70, d: 70, h: 70, z: 40, c: 'blue', delay: .45, drop: 90, float: 3});
+  const m = [['pink', 110, 20], ['pink', 200, 20], ['orange', 110, 110], ['orange', 200, 110], ['pink', 110, 200], ['teal', 200, 200]];
+  m.forEach(([c, x, y], i) => sc.box({x, y, w: 60, d: 60, h: i === 4 ? 90 : 48, z: 40, c, delay: .6 + i * .09, drop: 80}));
+  sc.label({at: [20, 90, 75], side: 'l', len: 50, title: 'Embedding', sub: 'EIS, 768 dims', delay: 1.35});
+  sc.label({at: [260, 20, 88], side: 'r', len: 50, title: 'Classifiers', sub: '4 single-pass', delay: 1.45});
+  sc.label({at: [110, 260, 130], side: 'l', len: 80, title: 'Zero-shot', sub: '5 passes', delay: 1.55});
+  sc.label({at: [260, 215, 88], side: 'r', len: 70, title: 'NER', sub: 'pii:*', delay: 1.6});
+  sc.run();
+})();
+</script>
+</body>
+</html>

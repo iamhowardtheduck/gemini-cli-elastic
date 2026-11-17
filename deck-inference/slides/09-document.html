@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The classified document</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:1120px}
+  .sub{font-size:16px;max-width:1000px}
+  .grid{position:absolute;left:72px;right:72px;top:244px;display:grid;grid-template-columns:1.25fr 1fr;gap:36px;z-index:2}
+  .win{border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--blue);align-self:start}
+  .win .bar{display:flex;gap:6px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--ink);font:500 10.5px var(--mono);color:var(--grey);text-transform:uppercase;letter-spacing:.05em}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:6px}
+  .win pre{margin:0;padding:10px 14px;font:400 11px/1.55 var(--mono);color:var(--char);white-space:pre}
+  .win pre .k{color:var(--ink);font-weight:600}
+  .win pre .p{color:var(--pink);font-weight:600}
+  .win pre .o{color:#B9472F;font-weight:600}
+  .win pre .g{color:var(--grey)}
+  .list{display:flex;flex-direction:column;border-top:1px solid var(--ink)}
+  .list div{padding:9px 0;border-bottom:1px solid var(--line)}
+  .list b{display:block;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink);margin-bottom:3px}
+  .list p{font-size:12.5px;line-height:1.45;color:var(--char)}
+  code{font-family:var(--mono);font-size:.92em}
+</style>
+</head>
+<body data-foot="Inference · The classified document">
+<div class="z">
+  <div class="eyebrow in1">Output · <b>gemini_cli.prompt_classification</b></div>
+  <h1 class="in2">Every result lands on the prompt. <span class="b">One field to filter, one to alert.</span></h1>
+  <p class="sub in3">A real Gemini CLI user prompt from the Gemini vs Claude load test, with median timing; the text is synthetic, from <code>tools/loadgen.py</code>. It holds no secret, so nothing was redacted.</p>
+</div>
+<div class="grid">
+  <div class="win in3">
+    <div class="bar"><i></i><i></i><i></i><span>logs-gemini_cli.transcript-default</span></div>
+<pre><span class="k">event.action</span>: "user-prompt"   <span class="k">gemini_cli.human_prompt</span>: true
+<span class="k">message</span>: "rename the date parsing helper keep the public API
+  unchanged (see app/search_ui_63341.py)"   <span class="g">gemini_cli.content: the same</span>
+<span class="k">gemini_cli.prompt_classification</span>:
+  <span class="k">categories</span>: [<span class="p">"task:data_analysis"</span>]
+  <span class="k">flagged</span>: false
+  <span class="k">task</span>: "data_analysis", <span class="k">task_confidence</span>: 0.390
+  <span class="k">scores</span>: { jailbreak: <span class="o">0.997</span>, prompt_injection: 0.000004,
+            security: {11 labels}, task: {13}, <span class="g">…</span> }
+  <span class="k">semantic</span>: { concept: "prompt_injection", score: 0.281,
+              threshold: 0.6 }
+<span class="k">gemini_cli.inference</span>:
+  classify_calls: 10, classify_ms: 25544.1, embedding_ms: 117.2
+  total_ms: 25662.6, steps: { zeroshot_task_ms: 7111.5,
+    zeroshot_security_ms: 5386.2, injection_ms: 2595.0, <span class="g">…</span> }</pre>
+  </div>
+  <div class="list in4">
+    <div><b>categories</b><p>Every label that crossed its threshold, as <code>group:key</code>. Here only the task: 0.39 clears the task pass's 0.30.</p></div>
+    <div><b>flagged</b><p>False. Jailbreak scored 0.997, but prompt injection stayed near 0, and the two must agree before either flags.</p></div>
+    <div><b>scores</b><p>Raw probabilities from every model, kept below threshold too, for hunting and re-tuning.</p></div>
+    <div><b>semantic</b><p>The nearest threat concept, 0.281, well under the 0.60 threshold: no semantic flag.</p></div>
+    <div><b>inference</b><p>Per-step timings in milliseconds: the zero-shot task pass alone took 7.1 s of this prompt's 25.5 s.</p></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

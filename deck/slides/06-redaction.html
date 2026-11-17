@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Secret redaction</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+.win{background:#fff;border:1px solid var(--ink);box-shadow:8px 8px 0 var(--blue)}
+.win .bar{height:30px;border-bottom:1px solid var(--ink);display:flex;align-items:center;gap:6px;padding:0 12px;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--char)}
+.win .bar i{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%}
+.win .bar span{margin-left:10px}
+
+.cols{display:grid;z-index:2;position:relative}
+.col{padding:0 28px;border-left:1px solid var(--ink);display:flex;flex-direction:column}
+.col:first-child{padding-left:0;border-left:0}
+.col:last-child{padding-right:0}
+.col .tag{margin-bottom:12px}
+
+h1{font-size:46px}
+.ba{position:absolute;left:72px;right:80px;top:232px;display:grid;grid-template-columns:1fr 56px 1fr;align-items:stretch;z-index:2}
+.win code{display:block;font:400 12px/2 var(--mono);color:var(--ink);padding:14px 18px;word-break:break-all}
+.win.after{box-shadow:8px 8px 0 var(--teal-d)}
+.win.before{box-shadow:8px 8px 0 var(--orange)}
+.arr{display:flex;align-items:center;justify-content:center}
+.arr svg{width:30px;height:14px;stroke:var(--ink);stroke-width:1.4;fill:none;stroke-dasharray:44;stroke-dashoffset:44;animation:draw .4s ease .95s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sec{background:linear-gradient(rgba(255,126,98,.45),rgba(255,126,98,.45)) no-repeat left/0 100%;animation:mark .35s ease forwards}
+.sec.s1{animation-delay:.5s}.sec.s2{animation-delay:.62s}.sec.s3{animation-delay:.74s}
+@keyframes mark{to{background-size:100% 100%}}
+.red{font-weight:600;color:var(--blue);border:1px solid var(--blue);padding:0 4px;animation:pop .35s cubic-bezier(.2,.7,.2,1) both}
+.red.r1{animation-delay:1.15s}.red.r2{animation-delay:1.25s}.red.r3{animation-delay:1.35s}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.red{display:inline-block;line-height:1.5}
+.cols{position:absolute;left:72px;right:72px;top:446px;grid-template-columns:repeat(3,1fr)}
+.col .cap{font-size:14px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Secret redaction">
+<div class="z">
+  <div class="eyebrow in1">Safe by default</div>
+  <h1 class="in2">Secrets never reach the index. <span class="b">Their types still do.</span></h1>
+</div>
+<div class="ba">
+  <div class="win before in2"><div class="bar"><i></i><i></i><i></i><span>What the developer pasted</span></div><code>export AWS_SECRET_ACCESS_KEY=<span class="sec s1">wJalrXUtnFEMI/K7MDENG/bPxRfiCY…</span><br>curl https://<span class="sec s2">admin:hunter2</span>@db.internal/…<br><span class="sec s3">ghp_8sK2…Xq</span> → "why is this token failing?"</code></div>
+  <div class="arr"><svg viewBox="0 0 30 14"><path d="M1 7h26M21 1l6 6-6 6"/></svg></div>
+  <div class="win after in5"><div class="bar"><i></i><i></i><i></i><span>What lands in Elasticsearch</span></div><code>export AWS_SECRET_ACCESS_KEY=<span class="red r1">[REDACTED:aws_secret_key]</span><br>curl https://<span class="red r2">[REDACTED:url_credentials]</span>@db.internal/…<br><span class="red r3">[REDACTED:github_token]</span> → "why is this token failing?"</code></div>
+</div>
+<div class="cols in6">
+  <div class="col"><div class="tag">01 · Broad coverage</div><p class="cap">Cloud keys including Google API keys, GitHub, GitLab, Slack and Stripe tokens, JWTs, private keys, passwords and URL credentials.</p></div>
+  <div class="col"><div class="tag">02 · Everywhere it hides</div><p class="cap">Applied to <span class="mono">message</span>, message content, tool calls and thoughts. If it cannot run, the text is dropped.</p></div>
+  <div class="col"><div class="tag">03 · Still detectable</div><p class="cap"><span class="mono">gemini_cli.secrets.*</span> keeps each secret's type and length, never its value, so the exposure itself becomes an alert.</p></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+
+})();
+</script>
+</body>
+</html>

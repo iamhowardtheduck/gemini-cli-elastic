@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Detection rules</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+h1{font-size:44px;max-width:470px}
+.left{position:relative;z-index:2;width:470px}
+.big{margin-top:34px;display:flex;align-items:flex-end;gap:14px}
+.big .stat{font-size:140px;letter-spacing:-6px}
+.big .post{font-size:15px;line-height:1.4;color:var(--char);padding-bottom:18px}
+.left .cap{margin-top:18px;max-width:420px}
+ul{position:absolute;left:600px;right:72px;top:96px;list-style:none;z-index:2}
+li{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:14px;padding:11px 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink);animation:ew-in .45s cubic-bezier(.2,.7,.2,1) both}
+li:last-child{border-bottom:1px solid var(--line)}
+.sev{display:flex;align-items:center;gap:8px;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--char)}
+.sev i{width:10px;height:10px}
+.sev.h i{background:#E0352B}.sev.m i{background:var(--orange)}.sev.l i{background:var(--slate)}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Detection rules">
+<div class="left">
+  <div class="eyebrow in1">Detections · <b>companion repo</b></div>
+  <h1 class="in2">Detections ship with it. <span class="b">Disabled until you tune them.</span></h1>
+  <div class="big in3"><span class="stat" data-n="8">8</span><span class="post">ES|QL rules for<br>Elastic Security</span></div>
+  <p class="cap in4">Every alert carries the prompt that triggered it, so triage starts with intent rather than a bare shell command. The credential-file rule also watches <span class="mono">~/.gemini/oauth_creds.json</span> and gcloud credentials.</p>
+</div>
+<ul><li style="animation-delay:0.45s"><span class="sev h"><i></i>high</span>Prompt injection or jailbreak attempt</li><li style="animation-delay:0.55s"><span class="sev h"><i></i>high</span>Prompt semantically similar to malicious intent</li><li style="animation-delay:0.65s"><span class="sev h"><i></i>high</span>Destructive, evasion or remote-shell command run by the agent</li><li style="animation-delay:0.75s"><span class="sev m"><i></i>med</span>Secret exposed to the model</li><li style="animation-delay:0.85s"><span class="sev m"><i></i>med</span>Agent accessed a sensitive credential file</li><li style="animation-delay:0.95s"><span class="sev m"><i></i>med</span>Credential access or persistence command run by the agent</li><li style="animation-delay:1.05s"><span class="sev m"><i></i>med</span>Agent contacted a paste, webhook or tunnel service</li><li style="animation-delay:1.15s"><span class="sev m"><i></i>med</span>Prompt requests disabling security or changing access</li></ul>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+document.querySelectorAll('.stat[data-n]').forEach(s => EW.count(s, +s.dataset.n, {delay: .35, dur: 1.1}));
+})();
+</script>
+</body>
+</html>

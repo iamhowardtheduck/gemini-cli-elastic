@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Every record structured</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+.win{background:#fff;border:1px solid var(--ink);box-shadow:8px 8px 0 var(--blue)}
+.win .bar{height:30px;border-bottom:1px solid var(--ink);display:flex;align-items:center;gap:6px;padding:0 12px;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--char)}
+.win .bar i{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%}
+.win .bar span{margin-left:10px}
+
+h1{font-size:44px;max-width:540px}
+.left{position:relative;z-index:2;max-width:520px}
+.lbl{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin:26px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.note{margin-top:24px;font-size:14.5px;line-height:1.5;color:var(--char);padding-top:14px;border-top:1px solid var(--line)}
+.note b{color:var(--ink);font-weight:600}
+.win{position:absolute;left:660px;top:118px;width:548px}
+pre{font:400 12.5px/1.8 var(--mono);color:var(--ink);padding:16px 20px}
+pre .ln{display:block;white-space:pre;animation:ew-in .45s cubic-bezier(.2,.7,.2,1) both}
+pre i{font-style:normal;color:var(--blue)}
+pre em{font-style:normal;color:var(--pink);font-weight:600}
+pre .hl{background:linear-gradient(rgba(255,126,98,.22),rgba(255,126,98,.22)) no-repeat left/0 100%;animation:ew-in .45s cubic-bezier(.2,.7,.2,1) both,mark .5s ease 1.55s forwards}
+@keyframes mark{to{background-size:100% 100%}}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Every record structured">
+<div class="left">
+  <div class="eyebrow in1">What's in a document</div>
+  <h1 class="in2">Every turn, tool call and token. <span class="b">On standard field names.</span></h1>
+  <div class="lbl in3">event.action</div>
+  <div class="chips in3"><span class="chip">user-prompt</span><span class="chip">assistant-response</span><span class="chip">tool-use</span><span class="chip">tool-result</span><span class="chip">assistant-thinking</span><span class="chip">subagent-prompt</span><span class="chip">local-command</span><span class="chip">system-notification</span></div>
+  <div class="lbl in4">Extracted tool inputs</div>
+  <div class="chips in4"><span class="chip on">tool_input.command</span><span class="chip on">tool_input.file_path</span><span class="chip on">tool_input.url</span><span class="chip on">tool_input.query</span><span class="chip on">tool_input.description</span></div>
+  <p class="note in5"><b><span class="mono">web_fetch</span> hides its URLs in a prompt.</b> They are pulled out into <span class="mono">tool_input.url</span>, so the exfil rule sees them. <span class="mono">gemini_cli.human_prompt: true</span> marks what a person typed.</p>
+</div>
+<div class="win in3"><div class="bar"><i></i><i></i><i></i><span>logs-gemini_cli.transcript-*</span></div><pre><span class="ln " style="animation-delay:0.45s">{</span><span class="ln " style="animation-delay:0.52s">  <i>"event.action"</i>: "tool-use",</span><span class="ln " style="animation-delay:0.59s">  <i>"user.name"</i>: "dev42",</span><span class="ln " style="animation-delay:0.66s">  <i>"gemini_cli.project"</i>: "payments",</span><span class="ln " style="animation-delay:0.73s">  <i>"gen_ai.response.model"</i>: "gemini-3.1-pro-preview",</span><span class="ln " style="animation-delay:0.80s">  <i>"gen_ai.tool.name"</i>: "web_fetch",</span><span class="ln " style="animation-delay:0.87s">  <i>"gemini_cli.toolCalls.args.prompt"</i>:</span><span class="ln " style="animation-delay:0.94s">      "Summarise https://paste.ee/p/AbC123",</span><span class="ln hl" style="animation-delay:1.01s">  <i>"gemini_cli.tool_input.url"</i>:</span><span class="ln hl" style="animation-delay:1.08s">      "https://paste.ee/p/AbC123",</span><span class="ln " style="animation-delay:1.15s">  <i>"gemini_cli.session_kind"</i>: "subagent",</span><span class="ln " style="animation-delay:1.22s">  <i>"gen_ai.provider.name"</i>: "gcp.gemini",</span><span class="ln " style="animation-delay:1.29s">  <i>"event.outcome"</i>: "success"</span><span class="ln " style="animation-delay:1.36s">}</span></pre></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+
+})();
+</script>
+</body>
+</html>

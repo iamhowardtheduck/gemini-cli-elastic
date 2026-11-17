@@ -1,0 +1,15 @@
+{
+  "name": "gemini-cli-transcripts-models",
+  "version": "1.0.0",
+  "description": "Models deck: Gemini CLI Transcripts",
+  "private": true,
+  "scripts": {
+    "serve": "fslides serve",
+    "build": "fslides build _site",
+    "pdf": "fslides pdf",
+    "gif": "fslides gif"
+  },
+  "devDependencies": {
+    "fslides": "^0.8.0"
+  }
+}

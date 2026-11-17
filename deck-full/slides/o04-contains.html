@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Data stream</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+.cols{display:grid;z-index:2;position:relative}
+.col{padding:0 28px;border-left:1px solid var(--ink);display:flex;flex-direction:column}
+.col:first-child{padding-left:0;border-left:0}
+.col:last-child{padding-right:0}
+.col .tag{margin-bottom:12px}
+
+h1{font-size:46px}
+.cols{position:absolute;left:72px;right:72px;top:236px;bottom:80px;grid-template-columns:1.15fr 1fr 1fr}
+.big{display:flex;align-items:flex-end;gap:12px;height:90px}
+.big .stat{font-size:88px}
+.big .post{font-size:14px;line-height:1.35;color:var(--char);padding-bottom:10px}
+.ds{font:500 11.5px var(--mono);color:var(--blue);margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.how{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.how p{font-size:13.5px;line-height:1.5;color:var(--char)}
+.how p b{color:var(--ink);font-weight:600}
+.opt{color:var(--grey);font-weight:400}
+.chip.off{color:var(--grey-l);text-decoration:line-through}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Data stream">
+<div class="z">
+  <div class="eyebrow in1">What it contains</div>
+  <h1 class="in2">One data stream. <span class="b">Every chat record.</span></h1>
+</div>
+<div class="cols">
+  <div class="col in3">
+    <div class="tag">01 · Chat transcripts</div>
+    <div class="big"><span class="stat" data-n="150" data-post="+">150+</span><span class="post">fields per<br>chat record</span></div>
+    <div class="ds">gemini_cli.transcript</div>
+    <div class="chips"><span class="chip">Linux</span><span class="chip">macOS</span><span class="chip">Windows</span><span class="chip">Subagent chats</span></div>
+    <div class="how"><p><b>One document per message:</b> prompts, responses, thoughts, tool calls and results, subagent prompts and token usage.</p></div>
+  </div>
+  <div class="col in4">
+    <div class="tag">02 · Only messages kept</div>
+    <div class="big"><span class="stat" data-n="2">2</span><span class="post">record types<br>indexed</span></div>
+    <div class="ds">gemini_cli.type</div>
+    <div class="chips"><span class="chip on">user</span><span class="chip on">gemini</span><span class="chip off">$set</span><span class="chip off">$patch</span><span class="chip off">$rewindTo</span></div>
+    <div class="how"><p><b>Noise dropped at the agent:</b> session headers, bookkeeping and info, warning and error display records never leave the host.</p></div>
+  </div>
+  <div class="col in5">
+    <div class="tag">03 · Tool calls</div>
+    <div class="big"><span class="stat" data-n="3">3</span><span class="post">records per<br>tool call</span></div>
+    <div class="ds">tool-use · tool-result</div>
+    <div class="chips"><span class="chip">model message</span><span class="chip">+ toolCalls</span><span class="chip">functionResponse</span></div>
+    <div class="how"><p><b>Output stands alone:</b> the tool output is indexed as its own <span class="mono">tool-result</span> document, not repeated inside the call.</p></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+document.querySelectorAll('.stat[data-n]').forEach(s => EW.count(s, +s.dataset.n, {post: s.dataset.post || '', delay: .4, dur: 1.2}));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+    "events": [
+        {
+            "log": { "file": { "path": "/home/dave/.gemini/tmp/infra/chats/0d0f5623-0000-4000-8000-000000000020/2876685b-0000-4000-8000-000000000021.jsonl" } },
+            "gemini_cli": {
+                "id": "8c3f2e4a-0000-4000-8000-000000000030",
+                "timestamp": "2026-11-14T13:00:00.000Z",
+                "type": "user",
+                "content": [ { "text": "Find every Terraform module that pins the AWS provider below 5.0." } ]
+            }
+        },
+        {
+            "log": { "file": { "path": "/home/dave/.gemini/tmp/infra/chats/0d0f5623-0000-4000-8000-000000000020/2876685b-0000-4000-8000-000000000021.jsonl" } },
+            "gemini_cli": {
+                "id": "8c3f2e4a-0000-4000-8000-000000000031",
+                "timestamp": "2026-11-14T13:00:04.000Z",
+                "type": "user",
+                "content": [ { "functionResponse": { "id": "glob__call_2001", "name": "glob", "response": { "output": "modules/vpc/versions.tf\nmodules/rds/versions.tf" } } } ]
+            }
+        },
+        {
+            "log": { "file": { "path": "/root/.gemini/tmp/infra/chats/session-2026-11-14T13-10-1a2b3c4d.jsonl" } },
+            "gemini_cli": {
+                "id": "8c3f2e4a-0000-4000-8000-000000000032",
+                "timestamp": "2026-11-14T13:10:00.000Z",
+                "type": "user",
+                "content": [ { "functionResponse": { "id": "read_file__call_2002", "name": "read_file", "response": { "error": "File not found: /root/infra/main.tf" } } } ]
+            }
+        }
+    ]
+}

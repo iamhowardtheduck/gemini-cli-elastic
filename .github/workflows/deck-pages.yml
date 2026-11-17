@@ -1,0 +1,53 @@
+name: Deploy decks to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deck*/**"
+      - "docs/*.pdf"
+      - ".github/workflows/deck-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the 5 decks
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
+        run: |
+          set -e
+          build() {   # deck dir, path under the Pages site (parents before their subfolders)
+            (cd "$1" && npm install --no-audit --no-fund && npx fslides build "$GITHUB_WORKSPACE/_site/$2")
+          }
+          build deck             ""
+          build deck-performance load-test
+          build deck-inference   inference
+          build deck-full        full
+          build deck-models      models
+      - name: Add the PDFs
+        run: |
+          cp docs/*.pdf _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,578 @@
+---
+description: Gemini CLI chat records (JSONL) to ECS + gen_ai.*, with secret redaction
+processors:
+- drop:
+    description: Keep only message records (JSON parse failures are kept for troubleshooting)
+    if: ctx.gemini_cli != null && ctx.gemini_cli.type != 'user' && ctx.gemini_cli.type != 'gemini'
+    tag: drop_keep_only_message_records
+- date:
+    ignore_failure: true
+    formats:
+    - ISO8601
+    field: gemini_cli.timestamp
+    tag: date_gemini_cli_timestamp
+- set:
+    field: event.kind
+    value: event
+    tag: set_event_kind
+- set:
+    field: service.name
+    value: gemini-cli
+    tag: set_service_name
+- set:
+    description: OTel well-known provider value for the Gemini API
+    field: gen_ai.provider.name
+    value: gcp.gemini
+    tag: set_gen_ai_provider_name
+- set:
+    description: ECS name (deprecated in OTel), kept for ECS consumers
+    field: gen_ai.system
+    value: gcp.gemini
+    tag: set_gen_ai_system
+- set:
+    ignore_empty_value: true
+    field: event.id
+    copy_from: gemini_cli.id
+    tag: set_event_id
+- set:
+    ignore_empty_value: true
+    field: gen_ai.response.model
+    copy_from: gemini_cli.model
+    tag: set_gen_ai_response_model
+- set:
+    field: gen_ai.response.id
+    copy_from: gemini_cli.id
+    if: ctx.gemini_cli?.type == 'gemini' && ctx.gemini_cli?.id != null
+    tag: set_gen_ai_response_id
+- set:
+    field: ecs.version
+    value: 9.3.0
+    tag: set_ecs_version
+- grok:
+    ignore_failure: true
+    field: log.file.path
+    patterns:
+    - (?i)%{SEP}(?:Users|home)%{SEP}%{SEG:user.name}%{SEP}\.gemini%{SEP}tmp%{SEP}%{SEG:gemini_cli.project}%{SEP}chats%{SEP}(?:%{SEG:gemini_cli.parent_session_id}%{SEP})?%{SEG:gen_ai.conversation.id}\.jsonl$
+    - ^/%{ROOTUSER:user.name}/\.gemini/tmp/%{SEG:gemini_cli.project}/chats/(?:%{SEG:gemini_cli.parent_session_id}/)?%{SEG:gen_ai.conversation.id}\.jsonl$
+    description: 'User, project, session and parent session (subagents) from the file path: <home>/.gemini/tmp/<project>/chats/[<parent session>/]<session>.jsonl'
+    ignore_missing: true
+    pattern_definitions:
+      SEG: '[^\\/]+'
+      ROOTUSER: root
+      SEP: '[\\/]'
+    tag: grok_log_file_path
+- append:
+    field: related.user
+    allow_duplicates: false
+    if: ctx.user?.name != null
+    value: '{{{user.name}}}'
+    tag: append_related_user
+- remove:
+    field: message
+    ignore_missing: true
+    tag: remove_message
+- script:
+    description: Normalise content to a list of parts, flatten text into ECS message, classify the record
+    tag: flatten-and-classify
+    lang: painless
+    if: ctx.gemini_cli != null
+    source: |
+      def g = ctx.gemini_cli;
+      // content is a plain string (model) or a list of parts (user); store one shape
+      if (g.content instanceof String) {
+        Map p = new HashMap(); p.put('text', g.content);
+        List l = new ArrayList(); l.add(p); g.content = l;
+      }
+      StringBuilder sb = new StringBuilder();
+      List respIds = new ArrayList(); List respNames = new ArrayList();
+      boolean respError = false;
+      if (g.content instanceof List) {
+        for (def p : g.content) {
+          if (!(p instanceof Map)) { continue; }
+          if (p.text instanceof String && p.thought != true) {
+            if (sb.length() > 0) { sb.append((char) 10); }
+            sb.append((String) p.text);
+          }
+          def fr = p.functionResponse;
+          if (fr instanceof Map) {
+            if (fr.id != null && !respIds.contains(fr.id.toString())) { respIds.add(fr.id.toString()); }
+            if (fr.name != null && !respNames.contains(fr.name.toString())) { respNames.add(fr.name.toString()); }
+            if (fr.response instanceof Map && fr.response.error != null) { respError = true; }
+          }
+        }
+      }
+      String text = sb.toString();
+      if (text.length() > 0) { ctx.message = text; }
+
+      // tool calls on model records; result / resultDisplay duplicate the functionResponse record
+      List calls = g.toolCalls instanceof List ? (List) g.toolCalls : new ArrayList();
+      List callIds = new ArrayList(); List callNames = new ArrayList();
+      boolean callError = false; boolean callOk = true;
+      for (def t : calls) {
+        if (!(t instanceof Map)) { continue; }
+        t.remove('result'); t.remove('resultDisplay');
+        if (t.id != null && !callIds.contains(t.id.toString())) { callIds.add(t.id.toString()); }
+        if (t.name != null && !callNames.contains(t.name.toString())) { callNames.add(t.name.toString()); }
+        if (t.status == 'error' || t.status == 'cancelled') { callError = true; }
+        if (t.status != 'success') { callOk = false; }
+      }
+
+      String action; String op = null;
+      if (g.type == 'user') {
+        boolean slash = text.length() > 1 && text.charAt(0) == (char) 47 && Character.isLetter(text.charAt(1)) && text.indexOf('/', 1) < 0;
+        if (!respIds.isEmpty() || !respNames.isEmpty())  { action = 'tool-result'; op = 'execute_tool'; }
+        else if (text.startsWith('<session_context>'))   { action = 'system-notification'; }
+        else if (slash)                                   { action = 'local-command'; }
+        else if (g.parent_session_id != null)            { action = 'subagent-prompt'; op = 'invoke_agent'; }
+        else                                              { action = 'user-prompt'; op = 'chat'; }
+      } else {
+        if (!calls.isEmpty())        { action = 'tool-use'; }
+        else if (text.length() > 0)  { action = 'assistant-response'; }
+        else                         { action = 'assistant-thinking'; }
+        op = 'chat';
+      }
+      if (ctx.event == null) { ctx.event = new HashMap(); }
+      ctx.event.action = action;
+      if (action == 'tool-result') { ctx.event.outcome = respError ? 'failure' : 'success'; }
+      else if (action == 'tool-use') { ctx.event.outcome = callError ? 'failure' : (callOk ? 'success' : 'unknown'); }
+      g.human_prompt = (action == 'user-prompt');
+      g.session_kind = g.parent_session_id != null ? 'subagent' : 'main';
+      if (!callNames.isEmpty()) { g.tool_names = callNames; }
+
+      if (ctx.gen_ai == null) { ctx.gen_ai = new HashMap(); }
+      def ga = ctx.gen_ai;
+      if (op != null) { ga.operation = ['name': op]; }
+      List ids = !callIds.isEmpty() ? callIds : respIds;
+      List names = !callNames.isEmpty() ? callNames : respNames;
+      if (!ids.isEmpty() || !names.isEmpty()) {
+        Map tool = new HashMap();
+        if (!ids.isEmpty()) { tool.put('call', ['id': ids]); }
+        if (!names.isEmpty()) { tool.put('name', names); }
+        ga.tool = tool;
+      }
+
+      // Gemini CLI appends a model record again each time it grows (tokens attached,
+      // then toolCalls). Only the version without toolCalls carries token usage, so a
+      // turn is counted once; the tool-use version drops its copy of the counts.
+      def tk = g.tokens;
+      if (g.type == 'gemini' && tk instanceof Map) {
+        if (calls.isEmpty()) {
+          long inp = tk.input instanceof Number ? ((Number) tk.input).longValue() : 0L;
+          long out = tk.output instanceof Number ? ((Number) tk.output).longValue() : 0L;
+          long th = tk.thoughts instanceof Number ? ((Number) tk.thoughts).longValue() : 0L;
+          long ca = tk.cached instanceof Number ? ((Number) tk.cached).longValue() : 0L;
+          // Gemini's prompt count already includes cached tokens (as OTel expects);
+          // thinking tokens are billed as output, so they are added to output_tokens.
+          ga.usage = ['input_tokens': inp, 'output_tokens': out + th, 'cache_read': ['input_tokens': ca]];
+        } else {
+          g.remove('tokens');
+        }
+      }
+      // version marker for the document _id: the record's state, so each growth step is a new document
+      g._version = 't' + (g.tokens != null ? '1' : '0') + 'c' + calls.size();
+- fingerprint:
+    description: 'Stable _id: host + file + record id + version. Resumed sessions re-append earlier records to the same file; same record -> same _id'
+    tag: fingerprint_id
+    fields:
+    - host.name
+    - log.file.path
+    - gemini_cli.id
+    - gemini_cli._version
+    target_field: _tmp.id
+    ignore_missing: true
+    if: ctx.gemini_cli?.id != null
+- set:
+    field: _id
+    copy_from: _tmp.id
+    if: ctx._tmp?.id != null
+    tag: set_id
+- remove:
+    description: Temporary fields and the raw timestamp (now @timestamp)
+    ignore_missing: true
+    field:
+    - _tmp
+    - gemini_cli._version
+    - gemini_cli.timestamp
+    tag: remove_temp_fields
+- script:
+    on_failure:
+    - append:
+        field: gemini_cli.secrets.errors
+        value: redaction script failed
+        tag: redact-secrets_on_failure_append_gemini_cli_secrets_errors
+    - script:
+        tag: redact-secrets_on_failure_fail_closed
+        lang: painless
+        description: 'Fail closed: drop the text that could not be scanned'
+        source: |
+          // Fail closed: text that was not scanned for secrets is not stored.
+          if (ctx.message != null) { ctx.message = '[REDACTED:redaction_failed]'; }
+          def g = ctx.gemini_cli;
+          if (g != null) { g.remove('content'); g.remove('toolCalls'); g.remove('thoughts'); g.remove('tool_input'); }
+          if (ctx.tags instanceof List) { ctx.tags.removeIf(t -> t == 'gemini_cli_embed' || t == 'gemini_cli_classify'); } else { ctx.tags = new ArrayList(); }
+          if (!ctx.tags.contains('secret_redaction_failed')) { ctx.tags.add('secret_redaction_failed'); }
+    description: Detect and redact secrets in message, content, toolCalls and thoughts (type + length only)
+    tag: redact-secrets
+    source: |
+      // Deterministic secrets scan + redaction for every transcript line. Records type + length only; values are replaced with [REDACTED:<type>].
+      // Error messages are never copied (Painless regex errors echo the input text).
+      boolean plausible(String v, List stop, boolean strong) {
+        if (v == null) { return false; }
+        String s = v.trim();
+        while (s.length() > 0 && ".,;:!?)]}'\"`".indexOf(s.substring(s.length() - 1)) >= 0) { s = s.substring(0, s.length() - 1); }
+        if (s.length() < 4) { return false; }
+        if (stop.contains(s.toLowerCase())) { return false; }
+        if (s.startsWith('[REDACTED')) { return false; }   // our own redaction marker
+        char c0 = s.charAt(0);
+        if (c0 == (char) 36 || c0 == (char) 60 || c0 == (char) 123 || c0 == (char) 37 || c0 == (char) 47 || c0 == (char) 126 || c0 == (char) 46) { return false; } // $ < { % / ~ .
+        boolean allMask = true;
+        for (int i = 0; i < s.length(); i++) { char ch = s.charAt(i); if (ch != (char) 42 && ch != (char) 120 && ch != (char) 88 && ch != (char) 46) { allMask = false; break; } } // * x X .
+        if (allMask) { return false; }
+        if (!strong) { return true; }
+        for (int i = 0; i < s.length(); i++) { if (!Character.isLetter(s.charAt(i))) { return true; } }   // needs a digit or symbol
+        return false;
+      }
+      void hit(List f, List seen, String type, String raw) {
+        String val = raw.trim();
+        while (val.length() > 0 && ".,;:!?)]}'\"`".indexOf(val.substring(val.length() - 1)) >= 0) { val = val.substring(0, val.length() - 1); }
+        int minLen = (type == 'password' || type == 'sudo_password') ? 4 : 6;   // weak, context-free types need longer values
+        if (val.length() < minLen || seen.contains(val)) { return; }   // de-duplicate by value: first (most specific) type wins
+        seen.add(val);                                              // in-memory only, used for replacement
+        Map m = new HashMap(); m.put('type', type); m.put('length', val.length()); f.add(m);
+      }
+
+      void scan(String text, List f, List seen, List errs, def params) {
+        if (text == null || text.length() < 4) { return; }
+        List stop = params.stop;
+        def m;
+        try { m = /A(?:KIA|SIA|BIA|CCA)[0-9A-Z]{16}/.matcher(text); while (m.find()) { hit(f, seen, 'aws_access_key', m.group()); } } catch (Exception e) { errs.add('aws_access_key'); }
+        try { m = /(?i)aws[_ \-]?secret[_ \-]?(?:access[_ \-]?)?key["']?\s?[=:]\s?['"]?([A-Za-z0-9\/+=]{40})(?![A-Za-z0-9\/+=])/.matcher(text); while (m.find()) { hit(f, seen, 'aws_secret_key', m.group(1)); } } catch (Exception e) { errs.add('aws_secret_key'); }
+        try { m = /gh[pousr]_[A-Za-z0-9]{36}/.matcher(text); while (m.find()) { hit(f, seen, 'github_token', m.group()); } } catch (Exception e) { errs.add('github_token'); }
+        try { m = /github_pat_[A-Za-z0-9_]{60,}/.matcher(text); while (m.find()) { hit(f, seen, 'github_token', m.group()); } } catch (Exception e) { errs.add('github_pat'); }
+        try { m = /glpat-[A-Za-z0-9_\-]{20,}/.matcher(text); while (m.find()) { hit(f, seen, 'gitlab_token', m.group()); } } catch (Exception e) { errs.add('gitlab_token'); }
+        try { m = /xox[abposr]-[A-Za-z0-9\-]{10,}/.matcher(text); while (m.find()) { hit(f, seen, 'slack_token', m.group()); } } catch (Exception e) { errs.add('slack_token'); }
+        try { m = /https:\/\/hooks\.slack\.com\/services\/[A-Za-z0-9\/]{20,}/.matcher(text); while (m.find()) { hit(f, seen, 'slack_webhook', m.group()); } } catch (Exception e) { errs.add('slack_webhook'); }
+        try { m = /sk-ant-[A-Za-z0-9_\-]{20,}/.matcher(text); while (m.find()) { hit(f, seen, 'anthropic_api_key', m.group()); } } catch (Exception e) { errs.add('anthropic_api_key'); }
+        try { m = /(?<![A-Za-z0-9])sk-(?!ant-)(?:proj-|svcacct-)?[A-Za-z0-9_\-]{32,}/.matcher(text); while (m.find()) { hit(f, seen, 'openai_api_key', m.group()); } } catch (Exception e) { errs.add('openai_api_key'); }
+        try { m = /AIza[0-9A-Za-z_\-]{35}/.matcher(text); while (m.find()) { hit(f, seen, 'google_api_key', m.group()); } } catch (Exception e) { errs.add('google_api_key'); }
+        try { m = /[sr]k_live_[0-9A-Za-z]{24,}/.matcher(text); while (m.find()) { hit(f, seen, 'stripe_key', m.group()); } } catch (Exception e) { errs.add('stripe_key'); }
+        try { m = /-----BEGIN ((?:RSA |EC |DSA |OPENSSH |PGP |ENCRYPTED )?PRIVATE KEY(?: BLOCK)?)-----[\s\S]*?(?:-----END \1-----|$)/.matcher(text); while (m.find()) { hit(f, seen, 'private_key', m.group()); } } catch (Exception e) { errs.add('private_key'); }
+        try { m = /eyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}/.matcher(text); while (m.find()) { hit(f, seen, 'jwt', m.group()); } } catch (Exception e) { errs.add('jwt'); }
+        try { m = /(?i)authorization\s?[:=]\s?['"]?(?:apikey|bearer|basic) ([A-Za-z0-9+\/=._\-]{16,})/.matcher(text); while (m.find()) { hit(f, seen, 'auth_header', m.group(1)); } } catch (Exception e) { errs.add('auth_header'); }
+        // NAME=value / "NAME": "value" where NAME contains PASSWORD|PASSWD|SECRET|TOKEN|API_KEY|APIKEY (indexOf + anchored window)
+        try {
+          int tl = text.length();
+          for (def kwd : params.env_keywords) {
+            String kw = (String) kwd;
+            int from = 0;
+            while (true) {
+              int p = text.indexOf(kw, from);
+              if (p < 0) { break; }
+              from = p + kw.length();
+              int s0 = p; while (s0 > 0) { char ch = text.charAt(s0 - 1); if ((ch >= (char) 65 && ch <= (char) 90) || (ch >= (char) 48 && ch <= (char) 57) || ch == (char) 95) { s0--; } else { break; } }
+              int e0 = from; while (e0 < tl) { char ch = text.charAt(e0); if ((ch >= (char) 65 && ch <= (char) 90) || (ch >= (char) 48 && ch <= (char) 57) || ch == (char) 95) { e0++; } else { break; } }
+              if (s0 > 0 && Character.isLetterOrDigit(text.charAt(s0 - 1))) { continue; }   // part of a lowercase/mixed word
+              from = e0;
+              int we = e0 + 120; if (we > tl) { we = tl; }
+              m = /^['"]? ?[=:] ?['"]?([^\s'",}]{4,})/.matcher(text.substring(e0, we));
+              if (m.find() && plausible(m.group(1), stop, false)) { hit(f, seen, 'env_secret', m.group(1)); }
+            }
+          }
+        } catch (Exception e) { errs.add('env_secret'); }
+        try { m = /echo ['"]?([^\s'"|]{4,})['"]? ?\| ?sudo -S/.matcher(text); while (m.find()) { if (plausible(m.group(1), stop, false)) { hit(f, seen, 'sudo_password', m.group(1)); } } } catch (Exception e) { errs.add('sudo_password'); }
+        try { m = /(?<![A-Za-z0-9_])user ?= ?['"]?[^\s:'"]{1,64}:([^\s'"]{4,})/.matcher(text); while (m.find()) { if (plausible(m.group(1), stop, false)) { hit(f, seen, 'basic_auth_cli', m.group(1)); } } } catch (Exception e) { errs.add('curl_config'); }
+        // CLI credentials (-u user:pass, -u user -p pass, --user/--username ... --password ...): indexOf + anchored regex on a short window
+        try {
+          int tl = text.length();
+          for (def kwd : params.cli_flags) {
+            String kw = (String) kwd;
+            int from = 0;
+            while (true) {
+              int p = text.indexOf(kw, from);
+              if (p < 0) { break; }
+              from = p + kw.length();
+              if (p > 0) { char pc0 = text.charAt(p - 1); if (!(Character.isWhitespace(pc0) || pc0 == (char) 39 || pc0 == (char) 34)) { continue; } }
+              int we = p + 200; if (we > tl) { we = tl; }
+              String w = text.substring(p, we);
+              m = /^(?:-u|--user|--username)[ =]['"]?[^\s:'"]{1,64}:([^\s'"@]{3,})/.matcher(w);
+              if (m.find() && plausible(m.group(1), stop, false)) { hit(f, seen, 'basic_auth_cli', m.group(1)); }
+              m = /^(?:-u|--user|--username)[ =]['"]?[^\s'"]{1,64}['"]? (?:-p ?|--password[ =])['"]?([^\s'"]{4,})/.matcher(w);
+              if (m.find() && plausible(m.group(1), stop, false)) { hit(f, seen, 'cli_password', m.group(1)); }
+            }
+          }
+        } catch (Exception e) { errs.add('cli_credentials'); }
+        // plain-language "password is X": find keywords with indexOf, run an anchored regex on a short window only
+        try {
+          String lower = text.toLowerCase();
+          for (def kwd : params.pw_keywords) {
+            String kw = (String) kwd; int kl = kw.length(); int tl = text.length();
+            int from = 0;
+            while (true) {
+              int p = lower.indexOf(kw, from);
+              if (p < 0) { break; }
+              from = p + kl;
+              if (p > 0 && Character.isLetterOrDigit(lower.charAt(p - 1))) { continue; }   // word start only
+              int we = p + kl + 96; if (we > tl) { we = tl; }
+              String win = text.substring(p + kl, we);
+              m = /^s?(?![A-Za-z0-9_])(?: (?:is|was)(?![A-Za-z0-9])| ?[=:]| (?=\S*[0-9!@#$%^&*]))(?: also(?![A-Za-z0-9]))? ?[:=]? {0,3}['"]?([^\s'",;]{4,})/.matcher(win);
+              if (m.find() && plausible(m.group(1), stop, true)) { hit(f, seen, 'password', m.group(1)); }
+            }
+          }
+        } catch (Exception e) { errs.add('password'); }
+        // scheme://user:pass@host, parsed without regex
+        try {
+          int from = 0;
+          while (true) {
+            int p = text.indexOf('://', from);
+            if (p < 0) { break; }
+            int end = p + 3;
+            while (end < text.length() && !Character.isWhitespace(text.charAt(end)) && text.charAt(end) != (char) 47 && text.charAt(end) != (char) 39 && text.charAt(end) != (char) 34) { end++; }
+            String auth = text.substring(p + 3, end);
+            int at = auth.lastIndexOf('@');
+            if (at > 0) { int col = auth.indexOf(':'); if (col > 0 && col < at) { String pw = auth.substring(col + 1, at); if (pw.length() >= 3 && plausible(pw, stop, false)) { hit(f, seen, 'url_credentials', pw); } } }
+            from = end;
+          }
+        } catch (Exception e) { errs.add('url_credentials'); }
+      }
+      void walkScan(def o, List f, List seen, List errs, def params, int depth) {
+        if (o == null || depth > 25) { return; }
+        if (o instanceof String) { scan((String) o, f, seen, errs, params); }
+        else if (o instanceof Map) { for (def v : ((Map) o).values()) { walkScan(v, f, seen, errs, params, depth + 1); } }
+        else if (o instanceof List) { for (def v : (List) o) { walkScan(v, f, seen, errs, params, depth + 1); } }
+      }
+      def walkReplace(def o, List vals, List tags, int depth) {
+        if (o == null || depth > 25) { return o; }
+        if (o instanceof String) {
+          String s = (String) o;
+          for (int i = 0; i < vals.size(); i++) { String v = (String) vals.get(i); if (s.indexOf(v) >= 0) { s = s.replace(v, (String) tags.get(i)); } }
+          return s;
+        }
+        if (o instanceof Map) { Map mp = (Map) o; for (def k : new ArrayList(mp.keySet())) { mp.put(k, walkReplace(mp.get(k), vals, tags, depth + 1)); } return mp; }
+        if (o instanceof List) { List l = (List) o; for (int i = 0; i < l.size(); i++) { l.set(i, walkReplace(l.get(i), vals, tags, depth + 1)); } return l; }
+        return o;
+      }
+
+      // ---- main: scan every free-text location of a chat record, then redact every occurrence everywhere ----
+      def g = ctx.gemini_cli;
+      if (g == null) { return; }
+      List f = new ArrayList(); List seen = new ArrayList(); List errs = new ArrayList();
+      walkScan(ctx.message, f, seen, errs, params, 0);
+      walkScan(g.content, f, seen, errs, params, 0);
+      walkScan(g.toolCalls, f, seen, errs, params, 0);
+      walkScan(g.thoughts, f, seen, errs, params, 0);
+      if (f.isEmpty() && errs.isEmpty()) { return; }
+      Map sec = new HashMap();
+      if (!errs.isEmpty()) { List el = new ArrayList(); for (def e : errs) { el.add('pattern ' + e + ' could not be evaluated'); } sec.put('errors', el); }
+      if (!f.isEmpty()) {
+        // longest values first so a value contained in another is not partially replaced
+        List order = new ArrayList(); for (int i = 0; i < f.size(); i++) { order.add(i); }
+        order.sort((a, b) -> ((String) seen.get(b)).length() - ((String) seen.get(a)).length());
+        List vals = new ArrayList(); List tags = new ArrayList();
+        for (def i : order) { vals.add(seen.get(i)); tags.add('[REDACTED:' + f.get(i).type + ']'); }
+        if (ctx.message != null) { ctx.message = walkReplace(ctx.message, vals, tags, 0); }
+        if (g.content != null) { g.content = walkReplace(g.content, vals, tags, 0); }
+        if (g.toolCalls != null) { g.toolCalls = walkReplace(g.toolCalls, vals, tags, 0); }
+        if (g.thoughts != null) { g.thoughts = walkReplace(g.thoughts, vals, tags, 0); }
+        List types = new ArrayList(); for (def x : f) { if (!types.contains(x.type)) { types.add(x.type); } }
+        sec.put('count', f.size()); sec.put('types', types); sec.put('findings', f); sec.put('redacted', true);
+      }
+      g.secrets = sec;
+    lang: painless
+    params:
+      cli_flags:
+      - -u
+      - --user
+      stop:
+      - required
+      - wrong
+      - incorrect
+      - correct
+      - the
+      - same
+      - set
+      - empty
+      - missing
+      - not
+      - 'null'
+      - none
+      - changed
+      - expired
+      - invalid
+      - redacted
+      - hidden
+      - unknown
+      - here
+      - below
+      - above
+      - there
+      - stored
+      - saved
+      - configured
+      - needed
+      - optional
+      - default
+      - blank
+      - your
+      - mine
+      - yours
+      - different
+      - reset
+      - sent
+      - updated
+      - protected
+      - encrypted
+      - hashed
+      - masked
+      - provided
+      - too
+      - still
+      - from
+      - in
+      - 'on'
+      - at
+      - for
+      - with
+      - and
+      - or
+      - a
+      - an
+      - is
+      - be
+      - changeme_please
+      - password
+      - secret
+      - token
+      - example
+      env_keywords:
+      - PASSWORD
+      - PASSWD
+      - SECRET
+      - TOKEN
+      - API_KEY
+      - APIKEY
+      pw_keywords:
+      - password
+      - passwd
+      - passphrase
+      - api key
+      - api_key
+      - api-key
+      - apikey
+      - access token
+      - access_token
+      - auth token
+      - auth_token
+      - secret key
+      - secret_key
+      - client secret
+      - client_secret
+    if: ctx.gemini_cli != null
+- set:
+    tag: set_redaction_ok
+    description: Marker for the pipeline on_failure handler - the text has been scanned (or dropped) for secrets
+    field: _redaction_ok
+    value: true
+- script:
+    description: toolCalls args -> gemini_cli.tool_input.* (command chunked for logsdb ignore_above)
+    tag: extract-tool-input
+    lang: painless
+    if: ctx.gemini_cli?.toolCalls instanceof List
+    source: |
+      // Copy tool-call arguments (already redacted) into mapped, searchable fields under gemini_cli.tool_input.
+      // Long commands are chunked (8000 chars, 256 overlap) because logsdb wildcard/keyword fields stop indexing at 8191.
+      void addChunks(List out, String s) {
+        if (s.length() <= 8000) { out.add(s); return; }
+        int start = 0;
+        while (start < s.length()) {
+          int end = start + 8000; if (end > s.length()) { end = s.length(); }
+          out.add(s.substring(start, end));
+          if (end == s.length()) { break; }
+          start = end - 256;
+        }
+      }
+      void addOnce(List out, def v) { if (v instanceof String && !out.contains(v)) { out.add(v); } }
+      def g = ctx.gemini_cli;
+      List cmds = new ArrayList(); List files = new ArrayList(); List urls = new ArrayList(); List descs = new ArrayList(); List queries = new ArrayList();
+      for (def t : g.toolCalls) {
+        if (!(t instanceof Map) || !(t.args instanceof Map)) { continue; }
+        def a = t.args;
+        if (a.command instanceof String) { addChunks(cmds, a.command); }
+        addOnce(files, a.file_path); addOnce(files, a.absolute_path); addOnce(files, a.path); addOnce(files, a.dir_path);
+        if (a.paths instanceof List) { for (def p : a.paths) { addOnce(files, p); } }
+        addOnce(urls, a.url);
+        if (t.name == 'web_fetch' && a.prompt instanceof String) {   // web_fetch takes URLs inside its prompt
+          def um = /https?:\/\/[^\s"'<>()\[\]]+/.matcher((String) a.prompt);
+          while (um.find()) {
+            String u = um.group();
+            while (u.length() > 0 && ".,;:!?".indexOf(u.substring(u.length() - 1)) >= 0) { u = u.substring(0, u.length() - 1); }
+            addOnce(urls, u);
+          }
+        }
+        if (a.urls instanceof List) { for (def u : a.urls) { addOnce(urls, u); } }
+        if (a.description instanceof String) { descs.add(a.description); }
+        addOnce(queries, a.query); addOnce(queries, a.pattern);
+      }
+      Map ti = new HashMap();
+      if (!cmds.isEmpty()) { ti.put('command', cmds); }
+      if (!files.isEmpty()) { ti.put('file_path', files); }
+      if (!urls.isEmpty()) { ti.put('url', urls); }
+      if (!descs.isEmpty()) { ti.put('description', descs); }
+      if (!queries.isEmpty()) { ti.put('query', queries); }
+      if (!ti.isEmpty()) { g.tool_input = ti; } else if (g.tool_input != null) { g.remove('tool_input'); }
+- pipeline:
+    tag: inference
+    name: '{{ IngestPipeline "inference" }}'
+    description: 'Optional ML inference (integration setting ''Enable ML inference''): embedding + prompt classification'
+    if: ctx.tags != null && (ctx.tags.contains('gemini_cli_embed') || ctx.tags.contains('gemini_cli_classify'))
+    ignore_failure: true
+- script:
+    tag: drop-inference-tags
+    lang: painless
+    description: Remove the internal inference switch tags
+    if: ctx.tags instanceof List
+    source: ctx.tags.removeIf(t -> t == 'gemini_cli_embed' || t == 'gemini_cli_classify'); if (ctx.tags.isEmpty()) { ctx.remove('tags'); }
+- remove:
+    tag: remove_temp_fields_end
+    description: Temporary fields (the inference sub-pipelines remove theirs, unless they failed)
+    field:
+    - _redaction_ok
+    - _embed_input
+    - _classify_input
+    - _ml
+    ignore_missing: true
+on_failure:
+- script:
+    tag: fail_closed_on_failure
+    lang: painless
+    if: ctx._redaction_ok != true
+    description: 'Fail closed: if the pipeline failed before secret redaction, drop the unscanned text'
+    source: |
+      // Fail closed: text that was not scanned for secrets is not stored.
+      if (ctx.message != null) { ctx.message = '[REDACTED:redaction_failed]'; }
+      def g = ctx.gemini_cli;
+      if (g != null) { g.remove('content'); g.remove('toolCalls'); g.remove('thoughts'); g.remove('tool_input'); }
+      if (ctx.tags instanceof List) { ctx.tags.removeIf(t -> t == 'gemini_cli_embed' || t == 'gemini_cli_classify'); } else { ctx.tags = new ArrayList(); }
+      if (!ctx.tags.contains('secret_redaction_failed')) { ctx.tags.add('secret_redaction_failed'); }
+- append:
+    tag: append_error_message_on_failure
+    field: error.message
+    value: Processor '{{{ _ingest.on_failure_processor_type }}}' {{{#_ingest.on_failure_processor_tag}}}with tag '{{{ _ingest.on_failure_processor_tag }}}' {{{/_ingest.on_failure_processor_tag}}}in pipeline '{{{ _ingest.pipeline }}}' failed with message '{{{ _ingest.on_failure_message }}}'
+- set:
+    tag: set_event_kind_pipeline_error
+    field: event.kind
+    value: pipeline_error
+- append:
+    tag: append_tags_preserve_original_event_on_failure
+    field: tags
+    value: preserve_original_event
+    allow_duplicates: false
+- remove:
+    field:
+    - _tmp
+    - gemini_cli._version
+    - _redaction_ok
+    - _embed_input
+    - _classify_input
+    - _ml
+    ignore_missing: true
+    tag: remove_temp_fields_on_failure

@@ -1,0 +1,5 @@
+fields:
+  data_stream:
+    type: logs
+    dataset: gemini_cli.transcript
+    namespace: default

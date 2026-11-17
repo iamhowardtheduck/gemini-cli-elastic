@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stepped load</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:570px}
+  .sub{font-size:15.5px;max-width:530px}
+  .facts{margin-top:22px;display:flex;flex-direction:column;gap:12px;max-width:530px}
+  .fact{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
+  .fact .v{font:500 30px var(--sans);letter-spacing:-1px;color:var(--blue)}
+  .fact .v.warn{color:var(--orange)}
+  .fact p{font-size:13.5px;line-height:1.45;color:var(--char)}
+  #chart{position:absolute;left:650px;top:112px;width:580px;height:500px;z-index:2}
+  #chart text{font-family:var(--mono);font-size:10.5px;fill:var(--grey)}
+  #chart .ttl{font-weight:600;fill:var(--ink);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+  #chart .val{fill:var(--ink);font-weight:600}
+  #chart .bar{transform-box:fill-box;transform-origin:bottom;animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes rise{from{transform:scaleY(0)}to{transform:none}}
+  #chart .late{opacity:0;animation:fade .3s ease forwards}
+  @keyframes fade{to{opacity:1}}
+</style>
+</head>
+<body data-foot="Load test · Run 2">
+<div class="z">
+  <div class="eyebrow in1">Run 2 · <b>Gemini CLI, classified, stepped</b></div>
+  <h1 class="in2">Every Gemini prompt classified to 0.45/s. <span class="b">The queue never built.</span></h1>
+  <p class="sub in3">Classifier time per prompt is the five serial zero-shot passes plus five single-pass models. It only rose in the last step, near the ceiling.</p>
+  <div class="facts">
+    <div class="fact in4"><span class="v">0</span><p>bulk, embedding or classification errors. 288 classified prompts, 9,216 records, all indexed.</p></div>
+    <div class="fact in5"><span class="v">≤12</span><p>zero-shot requests pending at any time, against 392 in run 1. Bulk p50 rose from about 26 s to 38 to 41 s at 0.45.</p></div>
+    <div class="fact in6"><span class="v warn">+16%</span><p>Gemini CLI p50 over Claude Code at 0.45 (32.2 vs 27.8 s). Below that step the two are within noise.</p></div>
+  </div>
+</div>
+<svg id="chart" viewBox="0 0 580 500"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  // classifier time per prompt, p50 / p95 in seconds, measured per step (run 2)
+  const steps = [['0.15/s', '540/h'], ['0.25/s', '900/h'], ['0.35/s', '1,260/h'], ['0.45/s', '1,620/h']];
+  const gem = [[24.4, 27.5], [25.0, 27.7], [25.7, 30.4], [32.2, 40.3]];
+  const cla = [[23.6, 26.5], [24.3, 28.1], [26.0, 29.5], [27.8, 35.0]];
+  const svg = document.getElementById('chart'), L = 44, R = 560, T = 60, B = 420;
+  const Y = v => B - (B - T) * v / 45, gw = (R - L) / 4, bw = 40;
+  const g = (t, a, p) => EW.el(t, a, p || svg);
+  g('text', {x: L, y: 18, class: 'ttl'}).textContent = 'Classifier time per prompt (s), p50 bar, p95 tick';
+  g('rect', {x: L, y: 32, width: 10, height: 10, fill: '#0B64DD'}); g('text', {x: L + 16, y: 41}).textContent = 'Gemini CLI';
+  g('rect', {x: L + 110, y: 32, width: 10, height: 10, fill: '#B5BFCE'}); g('text', {x: L + 126, y: 41}).textContent = 'Claude Code, same cluster';
+  [0, 10, 20, 30, 40].forEach(v => { g('line', {x1: L, x2: R, y1: Y(v), y2: Y(v), stroke: '#DDE3EC'}); g('text', {x: L - 8, y: Y(v) + 4, 'text-anchor': 'end'}).textContent = v; });
+  steps.forEach(([r, h], i) => {
+    const cx = L + gw * i + gw / 2;
+    g('text', {x: cx, y: B + 20, 'text-anchor': 'middle', style: 'fill:#1D1E24'}).textContent = r;
+    g('text', {x: cx, y: B + 36, 'text-anchor': 'middle'}).textContent = h;
+    [[gem[i], '#0B64DD', cx - bw - 3], [cla[i], '#B5BFCE', cx + 3]].forEach(([[p50, p95], c, x], k) => {
+      const d = (.4 + i * .12 + k * .06) + 's';
+      g('rect', {x, y: Y(p50), width: bw, height: B - Y(p50), fill: c, class: 'bar', style: 'animation-delay:' + d});
+      const m = x + bw / 2, ld = 'animation-delay:' + (1.2 + i * .08) + 's';
+      g('line', {x1: m, x2: m, y1: Y(p50), y2: Y(p95), stroke: '#1D1E24', 'stroke-width': 1, class: 'late', style: ld});
+      g('line', {x1: m - 8, x2: m + 8, y1: Y(p95), y2: Y(p95), stroke: '#1D1E24', 'stroke-width': 2, class: 'late', style: ld});
+      g('text', {x: m, y: Y(p95) - 6, 'text-anchor': 'middle', class: 'late', style: ld}).textContent = p95.toFixed(1);
+      g('text', {x: m, y: Y(p50) + 16, 'text-anchor': 'middle', class: 'late', style: ld + ';font-weight:600;fill:' + (k ? '#1D1E24' : '#fff')}).textContent = p50.toFixed(1);
+    });
+  });
+  g('text', {x: L, y: B + 62}).textContent = 'prompts per second (per hour), 4 min per step';
+})();
+</script>
+</body>
+</html>

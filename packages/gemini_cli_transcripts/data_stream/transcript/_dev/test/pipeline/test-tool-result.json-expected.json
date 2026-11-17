@@ -1,0 +1,209 @@
+{
+    "expected": [
+        {
+            "@timestamp": "2026-11-14T13:00:00.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "subagent-prompt",
+                "id": "8c3f2e4a-0000-4000-8000-000000000030",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": "Find every Terraform module that pins the AWS provider below 5.0."
+                    }
+                ],
+                "human_prompt": false,
+                "id": "8c3f2e4a-0000-4000-8000-000000000030",
+                "parent_session_id": "0d0f5623-0000-4000-8000-000000000020",
+                "project": "infra",
+                "session_kind": "subagent",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "2876685b-0000-4000-8000-000000000021"
+                },
+                "operation": {
+                    "name": "invoke_agent"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini"
+            },
+            "log": {
+                "file": {
+                    "path": "/home/dave/.gemini/tmp/infra/chats/0d0f5623-0000-4000-8000-000000000020/2876685b-0000-4000-8000-000000000021.jsonl"
+                }
+            },
+            "message": "Find every Terraform module that pins the AWS provider below 5.0.",
+            "related": {
+                "user": [
+                    "dave"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "dave"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T13:00:04.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "tool-result",
+                "id": "8c3f2e4a-0000-4000-8000-000000000031",
+                "kind": "event",
+                "outcome": "success"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "functionResponse": {
+                            "id": "glob__call_2001",
+                            "name": "glob",
+                            "response": {
+                                "output": "modules/vpc/versions.tf\nmodules/rds/versions.tf"
+                            }
+                        }
+                    }
+                ],
+                "human_prompt": false,
+                "id": "8c3f2e4a-0000-4000-8000-000000000031",
+                "parent_session_id": "0d0f5623-0000-4000-8000-000000000020",
+                "project": "infra",
+                "session_kind": "subagent",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "2876685b-0000-4000-8000-000000000021"
+                },
+                "operation": {
+                    "name": "execute_tool"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini",
+                "tool": {
+                    "call": {
+                        "id": [
+                            "glob__call_2001"
+                        ]
+                    },
+                    "name": [
+                        "glob"
+                    ]
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/home/dave/.gemini/tmp/infra/chats/0d0f5623-0000-4000-8000-000000000020/2876685b-0000-4000-8000-000000000021.jsonl"
+                }
+            },
+            "related": {
+                "user": [
+                    "dave"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "dave"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T13:10:00.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "tool-result",
+                "id": "8c3f2e4a-0000-4000-8000-000000000032",
+                "kind": "event",
+                "outcome": "failure"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "functionResponse": {
+                            "id": "read_file__call_2002",
+                            "name": "read_file",
+                            "response": {
+                                "error": "File not found: /root/infra/main.tf"
+                            }
+                        }
+                    }
+                ],
+                "human_prompt": false,
+                "id": "8c3f2e4a-0000-4000-8000-000000000032",
+                "project": "infra",
+                "session_kind": "main",
+                "type": "user"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T13-10-1a2b3c4d"
+                },
+                "operation": {
+                    "name": "execute_tool"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "system": "gcp.gemini",
+                "tool": {
+                    "call": {
+                        "id": [
+                            "read_file__call_2002"
+                        ]
+                    },
+                    "name": [
+                        "read_file"
+                    ]
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/root/.gemini/tmp/infra/chats/session-2026-11-14T13-10-1a2b3c4d.jsonl"
+                }
+            },
+            "related": {
+                "user": [
+                    "root"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "root"
+            }
+        }
+    ]
+}

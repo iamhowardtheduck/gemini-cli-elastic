@@ -1,0 +1,32 @@
+format_version: 3.6.0
+name: gemini_cli_transcripts
+title: Gemini CLI Transcripts
+version: 0.2.3
+description: Collect Gemini CLI chat transcripts (including subagent chats) from disk with Elastic Agent, mapped to ECS and gen_ai.*, with secret redaction, optional ML inference on prompts, dashboards, and detection rules whose alerts feed Entity Analytics user and host risk scores.
+type: integration
+categories:
+- security
+- observability
+conditions:
+  kibana:
+    version: ^9.4.0
+  elastic:
+    subscription: basic
+icons:
+- src: /img/icon.svg
+  title: Gemini CLI Transcripts
+  size: 64x64
+  type: image/svg+xml
+policy_templates:
+- name: gemini_cli
+  title: Gemini CLI
+  description: Gemini CLI chats (~/.gemini/tmp/<project>/chats)
+  inputs:
+  - type: filestream
+    title: Collect Gemini CLI chats
+    description: Tail the Gemini CLI JSONL chat files, including subagent chats
+owner:
+  github: iamhowardtheduck
+  type: community
+source:
+  license: Elastic-2.0

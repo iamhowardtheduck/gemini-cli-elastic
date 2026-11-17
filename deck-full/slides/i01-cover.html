@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cover</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:68px;line-height:.98;letter-spacing:-2.6px;margin-top:120px}
+  .sub{font-size:19px;max-width:520px;margin-top:26px}
+  .chips{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap;max-width:540px}
+  #hero{left:660px;top:0;width:620px;height:720px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Inference">
+<div class="z">
+  <div class="eyebrow in1">Ingest pipelines · <b>inference and redaction</b></div>
+  <h1 class="in2">Every prompt,<br>redacted, <span class="b">then read.</span></h1>
+  <p class="sub in3">What the Gemini CLI Transcripts pipelines do to each chat record before Elasticsearch stores it: 19 secret detectors, one embedding, 10 classifier calls and a semantic threat check.</p>
+  <div class="chips in4"><span class="chip on">gemini_cli_transcripts 0.2.2</span><span class="chip">default.yml</span><span class="chip">inference.yml</span><span class="chip">classify.yml</span></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 720 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 640, y: 30, w: 640, h: 660, seed: 4, blobs: 6, thr: .5});
+  const sc = EW.iso(document.getElementById('hero'), {ox: 300, oy: 250, s: .72});
+  sc.rect({x: -30, y: -30, w: 360, d: 330, z: 0, delay: .1});
+  sc.box({x: 0, y: 0, w: 300, d: 270, h: 40, c: 'blue', delay: .15, drop: 120, order: -1000});
+  // raw line: multi-colour data cubes, one of them a secret (red)
+  const raw = ['teal', 'yellow', 'slate', 'orange', 'teal'];
+  raw.forEach((c, i) => sc.box({x: 20, y: 30 + i * 44, w: 30, d: 30, h: 30, z: 40, c: i === 2 ? {top: '#FBE3E1', left: '#E0352B', right: '#9E241D'} : c, stroke: false, delay: .45 + i * .06, drop: 80}));
+  // redaction gate
+  sc.box({x: 85, y: 20, w: 40, d: 230, h: 70, z: 40, c: 'orange', delay: .8, drop: 90});
+  // processed: uniform blue cubes
+  for (let i = 0; i < 5; i++) sc.box({x: 160, y: 30 + i * 44, w: 30, d: 30, h: 30, z: 40, c: 'white', delay: 1.0 + i * .05, drop: 70});
+  // models
+  sc.box({x: 225, y: 40, w: 56, d: 56, h: 56, z: 40, c: 'pink', delay: 1.2, drop: 90, float: 3});
+  sc.box({x: 225, y: 150, w: 56, d: 90, h: 26, z: 40, c: 'teal', delay: 1.3, drop: 80});
+  sc.label({at: [105, 20, 110], side: 'l', len: 60, title: 'Redaction', sub: '19 detectors', delay: 1.4});
+  sc.label({at: [281, 40, 96], side: 'r', len: 50, title: 'Classifiers', sub: '6 NLP models', delay: 1.5});
+  sc.label({at: [281, 240, 66], side: 'r', len: 50, title: 'Embedding', sub: 'EIS, 768 dims', delay: 1.6});
+  sc.run();
+})();
+</script>
+</body>
+</html>

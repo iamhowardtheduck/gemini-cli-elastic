@@ -1,0 +1,22 @@
+{
+  "_notes": [
+    "Sizing profile for Elastic Cloud Hosted / ECE / ECK (with ML autoscaling) and Serverless: every deployment uses adaptive allocations, 1 thread (ingest-optimised).",
+    "min 1 keeps one allocation warm (billed while idle). min 0 lets a model scale to zero after 24 h without requests; the first prompt afterwards waits for the scale-up and may be indexed without classification.",
+    "Use: MODELS_FILE=extras/models/profiles/adaptive.json extras/setup.sh models"
+  ],
+  "eland_image": "docker.elastic.co/eland/eland:latest",
+  "models": [
+    {"model_id": "protectai__deberta-v3-base-prompt-injection-v2", "hub_model_id": "protectai/deberta-v3-base-prompt-injection-v2", "task_type": "text_classification", "max_model_input_length": 512,
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 4}}},
+    {"model_id": "jackhhao__jailbreak-classifier", "hub_model_id": "jackhhao/jailbreak-classifier", "task_type": "text_classification",
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 4}}},
+    {"model_id": "s-nlp__roberta_toxicity_classifier", "hub_model_id": "s-nlp/roberta_toxicity_classifier", "task_type": "text_classification", "max_model_input_length": 512,
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 4}}},
+    {"model_id": "cardiffnlp__twitter-roberta-base-offensive", "hub_model_id": "cardiffnlp/twitter-roberta-base-offensive", "task_type": "text_classification", "max_model_input_length": 512,
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 4}}},
+    {"model_id": "cross-encoder__nli-deberta-v3-base-128", "hub_model_id": "cross-encoder/nli-deberta-v3-base", "task_type": "zero_shot_classification", "max_model_input_length": 128,
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 32}}},
+    {"model_id": "dslim__bert-base-ner", "hub_model_id": "dslim/bert-base-ner", "task_type": "ner",
+     "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 4}}}
+  ]
+}

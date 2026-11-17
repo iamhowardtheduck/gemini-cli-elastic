@@ -1,0 +1,37 @@
+module.exports = {
+  style: 'elastic-web',
+  name: 'gemini-cli-transcripts',
+  title: 'Gemini CLI Transcripts for Elastic',
+  port: 30020,
+  slidesDir: 'slides',
+
+  slides: [
+    '01-cover.html',
+    '02-problem.html',
+    '03-what.html',
+    '04-contains.html',
+    '05-every-line.html',
+    '06-redaction.html',
+    '07-inference.html',
+    '08-dashboards.html',
+    '09-detections.html',
+    '10-why.html',
+    '11-solves.html',
+    '12-start.html',
+  ],
+
+  labels: [
+    'Cover',
+    'The Problem',
+    'How It Works',
+    'Data Stream',
+    'Every Record Structured',
+    'Secret Redaction',
+    'ML Inference',
+    'Dashboards',
+    'Detection Rules',
+    "Why It's Awesome",
+    'What It Solves',
+    'Get Started',
+  ],
+};

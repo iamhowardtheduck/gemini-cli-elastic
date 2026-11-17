@@ -1,0 +1,26 @@
+{"index": {"_id": "gemini-4-carbon"}}
+{"gen_ai": {"response": {"model": "gemini-4-carbon"}}, "pricing": {"input_per_mtok": 2.0, "output_per_mtok": 10.0, "cache_read_per_mtok": 0.1, "price_change_date": "2026-12-01", "next_input_per_mtok": 4.0, "next_output_per_mtok": 20.0, "next_cache_read_per_mtok": 0.2, "family": "gemini-4", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-4-argon"}}
+{"gen_ai": {"response": {"model": "gemini-4-argon"}}, "pricing": {"input_per_mtok": 2.0, "output_per_mtok": 10.0, "cache_read_per_mtok": 0.1, "price_change_date": "2026-12-01", "next_input_per_mtok": 4.0, "next_output_per_mtok": 20.0, "next_cache_read_per_mtok": 0.2, "family": "gemini-4", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-4-hydrogen"}}
+{"gen_ai": {"response": {"model": "gemini-4-hydrogen"}}, "pricing": {"input_per_mtok": 1.5, "output_per_mtok": 7.5, "cache_read_per_mtok": 0.075, "family": "gemini-4", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.8-flash"}}
+{"gen_ai": {"response": {"model": "gemini-3.8-flash"}}, "pricing": {"input_per_mtok": 0.75, "output_per_mtok": 3.75, "cache_read_per_mtok": 0.075, "price_change_date": "2027-01-01", "next_input_per_mtok": 1.5, "next_output_per_mtok": 7.5, "next_cache_read_per_mtok": 0.15, "family": "flash", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.6-flash"}}
+{"gen_ai": {"response": {"model": "gemini-3.6-flash"}}, "pricing": {"input_per_mtok": 0.75, "output_per_mtok": 3.75, "cache_read_per_mtok": 0.075, "price_change_date": "2027-01-01", "next_input_per_mtok": 1.5, "next_output_per_mtok": 7.5, "next_cache_read_per_mtok": 0.15, "family": "flash", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.5-flash-lite"}}
+{"gen_ai": {"response": {"model": "gemini-3.5-flash-lite"}}, "pricing": {"input_per_mtok": 0.3, "output_per_mtok": 2.5, "cache_read_per_mtok": 0.03, "family": "flash-lite", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.1-flash-lite"}}
+{"gen_ai": {"response": {"model": "gemini-3.1-flash-lite"}}, "pricing": {"input_per_mtok": 0.25, "output_per_mtok": 1.5, "cache_read_per_mtok": 0.025, "family": "flash-lite", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.1-pro-preview"}}
+{"gen_ai": {"response": {"model": "gemini-3.1-pro-preview"}}, "pricing": {"input_per_mtok": 2.0, "output_per_mtok": 12.0, "cache_read_per_mtok": 0.2, "long_context_threshold": 200000, "long_input_per_mtok": 4.0, "long_output_per_mtok": 18.0, "long_cache_read_per_mtok": 0.4, "family": "pro", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3.1-pro-preview-customtools"}}
+{"gen_ai": {"response": {"model": "gemini-3.1-pro-preview-customtools"}}, "pricing": {"input_per_mtok": 2.0, "output_per_mtok": 12.0, "cache_read_per_mtok": 0.2, "long_context_threshold": 200000, "long_input_per_mtok": 4.0, "long_output_per_mtok": 18.0, "long_cache_read_per_mtok": 0.4, "family": "pro", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-3-flash-preview"}}
+{"gen_ai": {"response": {"model": "gemini-3-flash-preview"}}, "pricing": {"input_per_mtok": 0.5, "output_per_mtok": 3.0, "cache_read_per_mtok": 0.05, "family": "flash", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-2.5-pro"}}
+{"gen_ai": {"response": {"model": "gemini-2.5-pro"}}, "pricing": {"input_per_mtok": 1.25, "output_per_mtok": 10.0, "cache_read_per_mtok": 0.125, "long_context_threshold": 200000, "long_input_per_mtok": 2.5, "long_output_per_mtok": 15.0, "long_cache_read_per_mtok": 0.25, "family": "pro", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-2.5-flash"}}
+{"gen_ai": {"response": {"model": "gemini-2.5-flash"}}, "pricing": {"input_per_mtok": 0.3, "output_per_mtok": 2.5, "cache_read_per_mtok": 0.03, "family": "flash", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}
+{"index": {"_id": "gemini-2.5-flash-lite"}}
+{"gen_ai": {"response": {"model": "gemini-2.5-flash-lite"}}, "pricing": {"input_per_mtok": 0.1, "output_per_mtok": 0.4, "cache_read_per_mtok": 0.01, "family": "flash-lite", "as_of": "2026-11-16", "source": "Google Gemini API list price, Paid Tier Standard, text (aistudio.google.com/docs/pricing)"}}

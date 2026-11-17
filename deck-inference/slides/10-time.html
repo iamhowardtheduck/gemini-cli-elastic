@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Where the time goes</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:1120px}
+  .sub{font-size:16px;max-width:1040px}
+  .chart{position:absolute;left:72px;right:72px;top:250px;z-index:2}
+  .row{display:grid;grid-template-columns:190px 1fr 70px;gap:12px;align-items:center;height:21px;font:400 11.5px var(--mono);color:var(--char)}
+  .row .tr{position:relative;height:14px}
+  .row .f{position:absolute;top:0;bottom:0;background:var(--slate);transform-origin:left;animation:g .5s cubic-bezier(.2,.8,.2,1) both}
+  .row.zs .f{background:var(--pink)}
+  .row.em .f{background:var(--blue)}
+  .row.zs{color:var(--ink);font-weight:600}
+  .row .v{text-align:right}
+  .axis{display:grid;grid-template-columns:190px 1fr 70px;gap:12px;margin-top:6px;font:500 10px var(--mono);color:var(--grey);text-transform:uppercase;letter-spacing:.05em}
+  .axis div{display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding-top:5px}
+  .sum{position:absolute;left:72px;right:72px;bottom:86px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;z-index:2}
+  .sum .card{padding:12px 16px}
+  .sum .stat{font-size:38px;letter-spacing:-1.6px;line-height:1}
+  .sum .card.hot{border-color:var(--ink);box-shadow:8px 8px 0 var(--pink)}
+  .sum .card.hot .stat{color:var(--pink)}
+  .sum span{display:block;margin-top:6px;font-size:12.5px;line-height:1.45;color:var(--char)}
+  @keyframes g{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  code{font-family:var(--mono);font-size:.92em}
+</style>
+</head>
+<body data-foot="Inference · Where the time goes">
+<div class="z">
+  <div class="eyebrow in1">Cost · <b>gemini_cli.inference.steps, one prompt</b></div>
+  <h1 class="in2">The calls run one after another. <span class="b">Zero-shot is 82.7% of the wait.</span></h1>
+  <p class="sub in3">Per-step timings on one classified Gemini CLI prompt with median timing, from the Gemini vs Claude load test on a self-managed cluster. Each step starts when the previous one ends.</p>
+</div>
+<div class="chart" id="chart"></div>
+<div class="sum">
+  <div class="card hot in4"><div class="stat">23.4 s</div><span>zero-shot passes, load-test p50: 82.7% of classifier time (classifier p50 26.1 s). Size this model first.</span></div>
+  <div class="card in5"><div class="stat">2.8 s</div><span>the five single-pass models together, p50. Embedding on EIS adds about 60 to 70 ms.</span></div>
+  <div class="card in6"><div class="stat">37 s</div><span>average ML time on 12 real Gemini CLI prompts, 0 inference errors. Failures go to <code>prompt_classification.errors</code>.</span></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  // gemini_cli.inference of the example document (load test, median timing), classify.yml order
+  const steps = [['embedding (EIS)', 117.2, 'em'], ['injection', 2595.0], ['jailbreak', 474.3], ['toxicity', 355.0], ['offensive', 324.3],
+    ['zero-shot · security', 5386.2, 'zs'], ['zero-shot · agent_action', 3992.3, 'zs'], ['zero-shot · task', 7111.5, 'zs'], ['zero-shot · interaction', 1886.8, 'zs'], ['zero-shot · moderation', 3047.3, 'zs'], ['ner', 371.4]];
+  const total = steps.reduce((a, s) => a + s[1], 0), host = document.getElementById('chart');
+  let at = 0;
+  steps.forEach(([n, ms, k], i) => {
+    const r = document.createElement('div'); r.className = 'row' + (k ? ' ' + k : '');
+    r.innerHTML = `<span>${n}</span><span class="tr"><span class="f" style="left:${at / total * 100}%;width:${ms / total * 100}%;animation-delay:${.4 + i * .1}s"></span></span><span class="v">${ms.toLocaleString('en-US', {minimumFractionDigits: 1})} ms</span>`;
+    host.appendChild(r); at += ms;
+  });
+  const ax = document.createElement('div'); ax.className = 'axis';
+  ax.innerHTML = '<span></span><div><span>0 s</span><span>' + (total / 2000).toFixed(1) + ' s</span><span>' + (total / 1000).toFixed(1) + ' s</span></div><span></span>';
+  host.appendChild(ax);
+})();
+</script>
+</body>
+</html>

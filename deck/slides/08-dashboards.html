@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Dashboards</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+.cols{display:grid;z-index:2;position:relative}
+.col{padding:0 28px;border-left:1px solid var(--ink);display:flex;flex-direction:column}
+.col:first-child{padding-left:0;border-left:0}
+.col:last-child{padding-right:0}
+.col .tag{margin-bottom:12px}
+
+h1{font-size:46px}
+.cols{position:absolute;left:72px;right:72px;top:236px;bottom:80px;grid-template-columns:repeat(3,1fr)}
+.big{display:flex;align-items:flex-end;gap:12px;height:90px}
+.big .stat{font-size:88px}
+.big .post{font-size:14px;color:var(--char);padding-bottom:12px}
+.sec .stat,.col:nth-child(2) .stat{color:var(--blue)}
+.blocks{display:flex;gap:4px;flex-wrap:wrap;margin:18px 0 18px;padding-top:14px;border-top:1px dashed var(--line);max-width:300px}
+.blocks i{width:14px;height:14px;background:var(--blue);animation:pop .3s ease both}
+.blocks.sec i{background:var(--orange)}
+.blocks.ml i{background:var(--teal)}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+.col .cap{font-size:14px}
+.aud{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Dashboards">
+<div class="z">
+  <div class="eyebrow in1">Out of the box · <b>ES|QL dashboards</b></div>
+  <h1 class="in2">Two dashboards. <span class="b">Priced at the right rate.</span></h1>
+</div>
+<div class="cols"><div class="col in3"><div class="tag">01 · Business Analytics</div><div class="big"><span class="stat" data-n="16">16</span><span class="post">panels</span></div><div class="blocks " data-n="16" data-d="0.6"></div><p class="cap">Activity, users, projects, models, token volume, estimated spend from the <span class="mono">gemini-model-pricing</span> lookup, and topics.</p><div class="aud"><span class="chip on">eng leaders · FinOps</span></div></div><div class="col in4"><div class="tag">02 · Security</div><div class="big"><span class="stat" data-n="17">17</span><span class="post">panels</span></div><div class="blocks sec" data-n="17" data-d="0.75"></div><p class="cap">Risky commands, secrets exposed, file and network access, failed tool calls, classifier results and semantic threat search.</p><div class="aud"><span class="chip">SOC · AppSec</span></div></div><div class="col in5"><div class="tag">03 · Spend lookup</div><div class="big"><span class="stat" data-n="13">13</span><span class="post">text models priced</span></div><div class="blocks ml" data-n="13" data-d="0.9"></div><p class="cap">Google's public list prices, with announced price changes and long-context rates. Each turn is priced at the rate in force on its date.</p><div class="aud"><span class="chip">extras/setup.sh pricing</span></div></div></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+document.querySelectorAll('.blocks').forEach(e => { for (let i = 0; i < +e.dataset.n; i++){ const b = document.createElement('i'); b.style.animationDelay = (+e.dataset.d + i * .03) + 's'; e.appendChild(b); } });
+document.querySelectorAll('.stat[data-n]').forEach(s => EW.count(s, +s.dataset.n, {delay: .4, dur: 1.1}));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Embedding</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:46px;max-width:620px}
+  .sub{font-size:16px;max-width:560px}
+  .z{max-width:640px}
+  .facts{margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:560px;border-top:1px solid var(--ink)}
+  .facts div{padding:12px 14px 12px 0;border-bottom:1px solid var(--line)}
+  .facts .stat{font-size:44px;letter-spacing:-1.6px;line-height:1}
+  .facts span{display:block;margin-top:6px;font:500 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--grey)}
+  .notes{margin-top:18px;max-width:580px;display:flex;flex-direction:column;gap:7px}
+  .notes p{font-size:13px;line-height:1.5;color:var(--char)}
+  .notes b{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:680px;top:40px;width:600px;height:620px}
+</style>
+</head>
+<body data-foot="Inference · Embedding">
+<div class="z">
+  <div class="eyebrow in1">Embedding · <b>inference.yml, tag prompt-embedding</b></div>
+  <h1 class="in2">One vector per prompt. <span class="b">No ML nodes needed.</span></h1>
+  <p class="sub in3">The redacted human prompt, the text a person typed into Gemini CLI, goes to <code>.jina-embeddings-v5-text-nano</code> on the Elastic Inference Service. Tool output, model responses and thoughts are never embedded.</p>
+  <div class="facts in4">
+    <div><div class="stat" data-count="768">768</div><span>dimensions, bbq_hnsw</span></div>
+    <div><div class="stat">8,000</div><span>characters, input cap</span></div>
+    <div><div class="stat">12<small style="font-size:22px"> / 12</small></div><span>real prompts embedded, test cluster</span></div>
+  </div>
+  <div class="notes in5">
+    <p><b>Search by meaning.</b> <code>gemini_cli.prompt_embedding</code> powers kNN and hybrid search over every prompt. Its mapping goes in <code>logs-gemini_cli.transcript@custom</code>.</p>
+    <p><b>Feeds the threat flags.</b> The same vector is compared with 29 threat phrases, with no extra model call.</p>
+    <p><b>Never blocks indexing.</b> A failed call writes <code>prompt_embedding_error</code> and the record is stored anyway.</p>
+  </div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 600 620"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('[data-count]').forEach(e => EW.count && EW.count(e, +e.dataset.count));
+  const sc = EW.iso(document.getElementById('hero'), {ox: 270, oy: 200, s: .74});
+  sc.rect({x: -20, y: -20, w: 380, d: 240, z: 0, delay: .05, dash: '2 4'});
+  // the prompt
+  sc.box({x: 0, y: 40, w: 90, d: 120, h: 30, c: 'white', delay: .15, drop: 70});
+  sc.label({at: [0, 160, 15], side: 'l', len: 40, title: 'Prompt', sub: 'redacted, trimmed', delay: 1.1});
+  // EIS
+  sc.box({x: 130, y: 60, w: 70, d: 80, h: 70, c: 'blue', delay: .35, drop: 80, float: 3});
+  sc.label({at: [200, 60, 70], side: 'r', len: 90, title: 'EIS', sub: 'jina-v5-text-nano', delay: 1.2});
+  // the vector: a row of thin bars of varying height
+  const R = EW.rand(11);
+  for (let i = 0; i < 24; i++) {
+    const h = 8 + Math.round(R() * 70);
+    sc.box({x: 240 + (i % 6) * 18, y: 30 + Math.floor(i / 6) * 36, w: 10, d: 24, h, c: i % 5 === 2 ? 'teal' : 'slate', stroke: false, delay: .6 + i * .025, drop: 40, snap: false});
+  }
+  sc.label({at: [348, 174, 0], side: 'r', len: 40, title: '768 dims', sub: 'prompt_embedding', delay: 1.35});
+  sc.run();
+})();
+</script>
+</body>
+</html>

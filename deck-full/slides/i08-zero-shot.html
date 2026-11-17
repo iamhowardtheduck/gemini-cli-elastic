@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zero-shot passes</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:1120px}
+  .sub{font-size:16px;max-width:1000px}
+  .wrap{position:absolute;left:72px;top:258px;width:800px;z-index:2}
+  table{width:100%;border-collapse:collapse;font:400 12px var(--mono);color:var(--char)}
+  th{font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey);text-align:left;padding:0 10px 8px 0;border-bottom:1px solid var(--ink)}
+  td{padding:8px 10px 8px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45}
+  td .fl{overflow-wrap:anywhere}
+  th{white-space:nowrap}
+  td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
+  td.n{text-align:right;white-space:nowrap}
+  th.n{text-align:right}
+  td .fl{color:var(--pink);font-weight:600}
+  td .no{color:var(--grey)}
+  .foot{margin-top:12px;font-size:12px;line-height:1.5;color:var(--grey);max-width:800px}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:900px;top:220px;width:360px;height:440px}
+</style>
+</head>
+<body data-foot="Inference · Zero-shot passes">
+<div class="z">
+  <div class="eyebrow in1">Zero-shot · <b>cross-encoder/nli-deberta-v3-base, 128 tokens</b></div>
+  <h1 class="in2">One model asks five questions. <span class="b">Each one is a full inference.</span></h1>
+  <p class="sub in3">Zero-shot classification scores the prompt against plain-English labels, so categories change in YAML without retraining. The cost is one pass per question, and every label is a separate NLI pair inside it.</p>
+</div>
+<div class="wrap in3">
+  <table>
+    <tr><th>Pass</th><th class="n">labels</th><th class="n">threshold</th><th>flags on</th><th>under 20 chars</th></tr>
+    <tr><td>security</td><td class="n">11</td><td class="n">0.93</td><td><span class="fl">8 attack labels</span>: malware, phishing, credential theft, bypass, evasion, recon, exfiltration, privilege escalation</td><td>skipped</td></tr>
+    <tr><td>agent_action</td><td class="n">8</td><td class="n">0.60</td><td><span class="fl">destructive, disable_security_tooling, access_change</span> (agent actions)</td><td>skipped</td></tr>
+    <tr><td>moderation</td><td class="n">7, multi</td><td class="n">0.95</td><td><span class="fl">all 7</span>, only when offensive ≥ 0.35 or toxic ≥ 0.10 corroborates</td><td>skipped</td></tr>
+    <tr><td>task</td><td class="n">13</td><td class="n">0.30</td><td><span class="no">never: insight only</span> (fix_bug, write_tests, infra_devops…)</td><td>runs</td></tr>
+    <tr><td>interaction</td><td class="n">4</td><td class="n">0.85</td><td><span class="no">never: insight only</span> (instruction, correction, satisfaction, "a question about Gemini itself")</td><td>runs</td></tr>
+  </table>
+  <p class="foot">Prompts under 20 characters ("yes", "continue") run only task and interaction: 2 passes instead of 5. Benign labels such as <code>normal_work</code> and <code>defensive_security</code> never flag. <code>scores.security_risk</code> keeps the summed probability of all attack labels for hunting.</p>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 360 440"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = EW.iso(document.getElementById('hero'), {ox: 170, oy: 120, s: .8});
+  sc.rect({x: -20, y: -20, w: 180, d: 180, z: 0, delay: .05, dash: '2 4'});
+  sc.box({x: 20, y: 20, w: 100, d: 100, h: 60, c: 'pink', delay: .15, drop: 80});
+  // five passes stacked above the model, one after another
+  const names = ['security', 'agent_action', 'moderation', 'task', 'interaction'];
+  names.forEach((n, i) => {
+    sc.box({x: 35, y: 35, w: 70, d: 70, h: 10, z: 80 + i * 22, c: i < 3 ? 'white' : 'slate', stroke: i < 3 ? undefined : false, delay: .5 + i * .14, drop: 60});
+  });
+  sc.label({at: [105, 35, 80 + 4 * 22 + 10], side: 'r', len: 40, title: '5 passes', sub: 'per prompt', delay: 1.4});
+  sc.label({at: [120, 20, 24], side: 'r', len: 30, title: '1 model', sub: ['deberta-v3,', '128 tokens'], delay: 1.5});
+  sc.run();
+})();
+</script>
+</body>
+</html>

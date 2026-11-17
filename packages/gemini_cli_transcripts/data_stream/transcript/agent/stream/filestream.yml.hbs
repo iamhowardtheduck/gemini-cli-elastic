@@ -1,0 +1,46 @@
+paths:
+{{#each paths as |path|}}
+  - {{path}}
+{{/each}}
+{{#if exclude_files}}
+exclude_files:
+{{#each exclude_files as |pattern|}}
+  - '{{pattern}}'
+{{/each}}
+{{/if}}
+prospector.scanner.recursive_glob: true
+parsers:
+  - ndjson:
+      target: gemini_cli
+      add_error_key: true
+      overwrite_keys: false
+message_max_bytes: {{message_max_bytes}}
+ignore_older: {{ignore_older}}
+close.on_state_change.inactive: 10m
+prospector.scanner.fingerprint.enabled: true
+tags:
+{{#if enable_inference}}
+  - gemini_cli_embed
+{{#if inference_classification}}
+  - gemini_cli_classify
+{{/if}}
+{{/if}}
+{{#each tags as |tag|}}
+  - {{tag}}
+{{/each}}
+processors:
+  # Keep message records only. Session headers, $set / $patch / $rewindTo bookkeeping
+  # and info / warning / error display records are dropped. JSON parse failures are kept.
+  - drop_event:
+      when:
+        not:
+          or:
+            - equals: { gemini_cli.type: "user" }
+            - equals: { gemini_cli.type: "gemini" }
+            - has_fields: ["error.message"]
+{{#if processors}}
+{{processors}}
+{{/if}}
+{{#if custom}}
+{{custom}}
+{{/if}}

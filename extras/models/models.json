@@ -1,0 +1,58 @@
+{
+  "_notes": [
+    "Models used by the classify pipeline. extras/setup.sh models imports any that are missing (eland via Docker) and starts or updates their deployments to match 'deployment'.",
+    "model_id must stay as listed unless you also change the model_id in packages/claude_code_transcripts/data_stream/transcript/elasticsearch/ingest_pipeline/classify.yml.",
+    "deployment: use either number_of_allocations (fixed) or adaptive_allocations. threads_per_allocation can only change with --restart.",
+    "The 'reference' blocks record what ran on the reference cluster (3 ML nodes, CPU only, about 1.3 prompts/s); they are informational."
+  ],
+  "eland_image": "docker.elastic.co/eland/eland:latest",
+  "models": [
+    {
+      "model_id": "protectai__deberta-v3-base-prompt-injection-v2",
+      "hub_model_id": "protectai/deberta-v3-base-prompt-injection-v2",
+      "task_type": "text_classification",
+      "max_model_input_length": 512,
+      "purpose": "prompt injection (flags only together with the jailbreak model)",
+      "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 3}}
+    },
+    {
+      "model_id": "jackhhao__jailbreak-classifier",
+      "hub_model_id": "jackhhao/jailbreak-classifier",
+      "task_type": "text_classification",
+      "purpose": "jailbreak attempts",
+      "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 3}}
+    },
+    {
+      "model_id": "s-nlp__roberta_toxicity_classifier",
+      "hub_model_id": "s-nlp/roberta_toxicity_classifier",
+      "task_type": "text_classification",
+      "max_model_input_length": 512,
+      "purpose": "toxic language",
+      "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 3}}
+    },
+    {
+      "model_id": "cardiffnlp__twitter-roberta-base-offensive",
+      "hub_model_id": "cardiffnlp/twitter-roberta-base-offensive",
+      "task_type": "text_classification",
+      "max_model_input_length": 512,
+      "purpose": "offensive language",
+      "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 3}}
+    },
+    {
+      "model_id": "cross-encoder__nli-deberta-v3-base-128",
+      "hub_model_id": "cross-encoder/nli-deberta-v3-base",
+      "task_type": "zero_shot_classification",
+      "max_model_input_length": 128,
+      "purpose": "5 zero-shot passes per prompt: security, agent_action, task, interaction, moderation. The bottleneck: size this one.",
+      "deployment": {"threads_per_allocation": 1, "number_of_allocations": 4},
+      "reference": {"number_of_allocations": 18, "threads_per_allocation": 1, "adaptive_allocations": "off", "why": "adaptive allocations spilled onto busy shared ML nodes (16 s per request there); a fixed count started fresh landed on the dedicated node"}
+    },
+    {
+      "model_id": "dslim__bert-base-ner",
+      "hub_model_id": "dslim/bert-base-ner",
+      "task_type": "ner",
+      "purpose": "named entities (pii:* categories)",
+      "deployment": {"threads_per_allocation": 1, "adaptive_allocations": {"enabled": true, "min_number_of_allocations": 1, "max_number_of_allocations": 3}}
+    }
+  ]
+}

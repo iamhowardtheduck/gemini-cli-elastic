@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: ML inference</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+h1{font-size:42px;max-width:560px}
+.models{margin-top:26px;max-width:520px;position:relative;z-index:2}
+.m{padding:11px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:baseline}
+.m:last-child{border-bottom:1px solid var(--line)}
+.m .cap{font-size:13.5px}
+.chart{position:absolute;left:660px;top:120px;width:548px;z-index:2}
+.chart>.tag{color:var(--grey);font-weight:500;margin-bottom:16px}
+.plot{position:relative}
+.bar{display:grid;grid-template-columns:210px 1fr;white-space:nowrap;align-items:center;gap:12px;margin-bottom:12px;font:400 12px var(--mono);color:var(--char)}
+.bar .tr{height:14px;background:var(--bg);position:relative}
+.bar .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--slate);transform-origin:left;animation:grow 1s cubic-bezier(.2,.7,.2,1) both}
+.bar.hit{color:var(--ink);font-weight:600}
+.bar.hit .tr i{background:var(--orange)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+.thr{position:absolute;top:-8px;bottom:-2px;left:calc(222px + (100% - 222px) * .6);border-left:1px dashed var(--ink)}
+.thr span{position:absolute;top:-16px;left:6px;white-space:nowrap;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.proof{display:grid;grid-template-columns:1fr 1fr;margin-top:30px;padding-top:18px;border-top:1px solid var(--ink)}
+.proof .stat{font-size:56px;letter-spacing:-2px}
+.proof .cap{font-size:13px;margin-top:6px}
+.proof>div+div{padding-left:24px;border-left:1px solid var(--line)}
+.foot-note{font-size:12.5px;color:var(--grey);margin-top:16px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · ML inference">
+<div class="z">
+  <div class="eyebrow in1">Optional ML inference · <b>human prompts</b></div>
+  <h1 class="in2">Elastic reads every prompt. <span class="b">And tells you what it asks for.</span></h1>
+  <div class="models in3">
+    <div class="m"><div class="tag">Embedding</div><p class="cap"><span class="mono">jina-embeddings-v5</span>, 768 dims, BBQ HNSW. Search prompts by meaning.</p></div>
+    <div class="m"><div class="tag">Classifiers</div><p class="cap">Prompt injection, jailbreak, toxicity and offensive language.</p></div>
+    <div class="m"><div class="tag">Zero-shot ×5</div><p class="cap">Security, agent action, task, interaction and moderation intent.</p></div>
+    <div class="m"><div class="tag">NER</div><p class="cap">People, organizations and locations named in prompts. Gemini and Google are ignored.</p></div>
+  </div>
+</div>
+<div class="chart in3">
+  <div class="tag">Semantic threat flags · illustrative prompts</div>
+  <div class="plot"><div class="bar "><span>refactor the parser</span><div class="tr"><i style="width:22%;animation-delay:0.70s"></i></div></div><div class="bar "><span>write unit tests for auth</span><div class="tr"><i style="width:30%;animation-delay:0.78s"></i></div></div><div class="bar "><span>deploy to staging</span><div class="tr"><i style="width:41%;animation-delay:0.86s"></i></div></div><div class="bar hit"><span>turn off the EDR agent</span><div class="tr"><i style="width:74%;animation-delay:0.94s"></i></div></div><div class="bar hit"><span>send ~/.ssh to a paste site</span><div class="tr"><i style="width:86%;animation-delay:1.02s"></i></div></div><div class="thr in5"><span>0.60 · flagged</span></div></div>
+  <div class="proof in5">
+    <div><div class="stat"><span data-n="12">12</span><small> · 0 errors</small></div><p class="cap">real Gemini CLI prompts embedded and classified on a test cluster</p></div>
+    <div><div class="stat">5<small> of 6</small></div><p class="cap">classified exactly as the Claude Code pipeline does; NER ignoring "Gemini" is the intended difference</p></div>
+  </div>
+  <p class="foot-note in6">Same models and thresholds as Claude Code Transcripts. Off by default; never blocks indexing.</p>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+document.querySelectorAll('[data-n]').forEach(s => EW.count(s, +s.dataset.n, {delay: .8, dur: .9}));
+})();
+</script>
+</body>
+</html>

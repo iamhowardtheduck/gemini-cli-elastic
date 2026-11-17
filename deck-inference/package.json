@@ -1,0 +1,14 @@
+{
+  "name": "gemini-cli-transcripts-inference",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "fslides serve",
+    "build": "fslides build _site",
+    "pdf": "fslides pdf",
+    "gif": "fslides gif"
+  },
+  "devDependencies": {
+    "fslides": "^0.8.0"
+  }
+}

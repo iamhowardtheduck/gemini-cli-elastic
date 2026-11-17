@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Cover</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+h1{font-size:88px;line-height:.96;letter-spacing:-3.6px;margin-top:118px}
+.sub{font-size:19px;max-width:500px;margin-top:26px}
+.chips{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap;max-width:500px}
+#hero{left:600px;top:0;width:680px;height:720px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · gemini_cli_transcripts">
+<div class="z">
+  <div class="eyebrow in1">Elastic integration · <b>gemini_cli_transcripts</b></div>
+  <h1 class="in2">Every chat.<br><span class="b">Searchable.</span></h1>
+  <p class="sub in3">Gemini CLI chat transcripts, subagent chats included, land in Elastic structured, redacted and ML-enriched, with dashboards and detections included.</p>
+  <div class="chips in4"><span class="chip">ECS</span><span class="chip">gen_ai.*</span><span class="chip">Elastic Agent 9.4+</span><span class="chip on">Gemini CLI</span></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 720 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+EW.dots({x: 700, y: 30, w: 580, h: 620, seed: 4, blobs: 6, thr: .5});
+const sc = EW.iso(document.getElementById('hero'), {ox: 300, oy: 282, s: .8});
+sc.rect({x: -30, y: -30, w: 330, d: 330, z: 0, delay: .1});
+const plat = sc.box({x: 0, y: 0, w: 270, d: 270, h: 46, c: 'blue', delay: .15, drop: 120, order: -1000});
+[128, 108, 88, 68, 48].forEach((h, i) => sc.box({x: 22 + i * 35.5, y: 150, w: 26, d: 100, h, z: 46, c: 'slate', stroke: false, delay: .55 + i * .07, drop: 90, order: 1}));
+sc.box({x: 190, y: 26, w: 60, d: 60, h: 76, z: 46, c: 'teal', delay: .82, drop: 90});
+const foot = sc.rect({x: 60, y: 22, w: 104, d: 104, z: 46, sw: 1.2, delay: 1.0});
+sc.box({x: 60, y: 22, w: 104, d: 104, h: 104, z: 176, c: 'glass', wire: true, inner: true, stroke: '#343741', delay: 1.05, drop: 60, float: 7, floatSpeed: 1.1, order: 2000});
+sc.box({x: 72, y: 34, w: 80, d: 80, h: 80, z: 188, c: 'pink', delay: 1.1, drop: 80, float: 7, floatSpeed: 1.1, order: 3000});
+sc.label({at: [164, 22, 176 + 52], side: 'r', len: 50, title: 'Gemini CLI', sub: 'Every chat captured', raw: true, delay: .95});
+sc.label({at: [250, 26, 46 + 38], side: 'r', len: 40, title: 'Ingest pipeline', sub: 'Parse, map, redact', delay: 1.05});
+sc.label({at: [270, 170, 16], side: 'r', len: 110, title: 'Elastic', sub: ['Search AI platform', 'Dashboards + rules'], raw: true, delay: 1.15});
+sc.run();
+const fid = document.querySelector('#hero filter').id;
+const sh = EW.el('polygon', {points: [[70, 32], [158, 32], [158, 120], [70, 120]].map(([x, y]) => sc.P(x, y, 46).join(',')).join(' '), fill: 'rgba(30,40,80,.30)', filter: `url(#${fid})`, opacity: 0});
+plat.g.after(foot.g); foot.g.after(sh);
+const c = sc.P(114, 76, 46).map(v => v.toFixed(1));
+EW.loop(t => { const k = Math.min(1, Math.max(0, (t - 1.1) / .6)), f = t > 1.8 ? Math.sin((t - 1.8) * 1.1) : 0;
+  sh.setAttribute('opacity', (k * (.85 - .25 * f)).toFixed(3));
+  sh.setAttribute('transform', `translate(${c.join(',')}) scale(${(1 - .06 * f).toFixed(3)}) translate(${c.map(v => -v).join(',')})`); });
+})();
+</script>
+</body>
+</html>

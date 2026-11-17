@@ -1,0 +1,241 @@
+- name: gemini_cli
+  type: group
+  description: Raw Gemini CLI chat record (one JSONL line) plus fields derived by the ingest pipeline.
+  fields:
+  - name: content
+    type: group
+    dynamic: false
+    description: Message parts. Model text is normalised from a plain string to `[{text}]` so every record has one shape.
+    fields:
+    - name: text
+      type: match_only_text
+      description: Text part.
+    - name: thought
+      type: boolean
+      description: True for a thought (reasoning) part.
+    - name: functionResponse
+      type: group
+      dynamic: false
+      description: Tool result sent back to the model.
+      fields:
+      - name: id
+        type: keyword
+        description: Tool call ID this result answers.
+      - name: name
+        type: keyword
+        description: Tool name.
+      - name: response
+        type: group
+        dynamic: false
+        description: Tool response. Other keys stay in `_source` unmapped.
+        fields:
+        - name: output
+          type: match_only_text
+          description: Tool output.
+        - name: error
+          type: match_only_text
+          description: Tool error.
+    - name: inlineData
+      type: group
+      dynamic: false
+      description: Inline media (pasted images, files). The base64 data stays in `_source` unmapped.
+      fields:
+      - name: mimeType
+        type: keyword
+        description: Media type.
+  - name: human_prompt
+    type: boolean
+    description: True when the record is a prompt typed by a human (event.action user-prompt).
+  - name: id
+    type: keyword
+    description: Message ID. A model message is re-appended under the same ID as it grows (tokens, then toolCalls).
+  - name: model
+    type: keyword
+    description: Model that produced the response.
+  - name: parent_session_id
+    type: keyword
+    description: Subagent chats only. Session ID of the parent session (the `chats/<parent session>/` directory). A main session file name ends in the first 8 characters of this ID.
+  - name: project
+    type: keyword
+    description: Project directory under ~/.gemini/tmp. A SHA-256 hash of the project root in older releases, a short project name in newer ones.
+  - name: secrets
+    type: group
+    description: Secrets found and redacted in this record. Values are never stored, only type and length.
+    fields:
+    - name: count
+      type: long
+      description: Number of distinct secret values found.
+    - name: errors
+      type: keyword
+      ignore_above: 1024
+      description: Patterns that could not be evaluated.
+    - name: findings
+      type: group
+      description: One entry per secret value.
+      fields:
+      - name: length
+        type: long
+        description: Length of the secret value.
+      - name: type
+        type: keyword
+        description: Secret type (password, github_token, google_api_key, and so on).
+    - name: redacted
+      type: boolean
+      description: True when values were replaced with `[REDACTED:<type>]`.
+    - name: types
+      type: keyword
+      description: Distinct secret types found.
+  - name: session_kind
+    type: keyword
+    description: main or subagent, from the file location.
+  - name: thoughts
+    type: group
+    dynamic: false
+    description: Thought summaries attached to a model message.
+    fields:
+    - name: subject
+      type: match_only_text
+      description: Thought subject.
+    - name: description
+      type: match_only_text
+      description: Thought summary.
+    - name: timestamp
+      type: date
+      description: When the thought was recorded.
+  - name: tokens
+    type: group
+    description: Raw Gemini token counts. Kept only on the record version that also sets gen_ai.usage.*, so sums count each turn once.
+    fields:
+    - name: cached
+      type: long
+      description: Cached prompt tokens (included in input).
+    - name: input
+      type: long
+      description: Prompt tokens, including cached tokens.
+    - name: output
+      type: long
+      description: Response tokens, excluding thoughts.
+    - name: thoughts
+      type: long
+      description: Thinking tokens.
+    - name: tool
+      type: long
+      description: Tool-use prompt tokens.
+    - name: total
+      type: long
+      description: Total tokens.
+  - name: toolCalls
+    type: group
+    dynamic: false
+    description: Tool calls requested by the model. `result` and `resultDisplay` are removed (the result is indexed as its own tool-result document).
+    fields:
+    - name: args
+      type: flattened
+      ignore_above: 8191
+      description: Tool arguments.
+    - name: description
+      type: match_only_text
+      description: Tool call description.
+    - name: displayName
+      type: keyword
+      description: Tool display name.
+    - name: id
+      type: keyword
+      description: Tool call ID.
+    - name: name
+      type: keyword
+      description: Tool name.
+    - name: renderOutputAsMarkdown
+      type: boolean
+      description: Whether the CLI renders the output as Markdown.
+    - name: status
+      type: keyword
+      description: Tool call status (success, error, cancelled).
+    - name: timestamp
+      type: date
+      description: When the tool call completed.
+  - name: tool_input
+    type: group
+    description: Searchable copies of common tool arguments (already redacted).
+    fields:
+    - name: command
+      type: wildcard
+      ignore_above: 8191
+      description: Shell commands. Commands over 8000 characters are split into overlapping chunks.
+    - name: description
+      type: match_only_text
+      description: Tool call descriptions.
+    - name: file_path
+      type: keyword
+      ignore_above: 1024
+      description: Files and directories (file_path, absolute_path, path, dir_path, paths).
+    - name: query
+      type: keyword
+      ignore_above: 1024
+      description: Search queries and glob or grep patterns.
+    - name: url
+      type: keyword
+      ignore_above: 2048
+      description: URLs.
+  - name: tool_names
+    type: keyword
+    description: Names of the tools called in this record.
+  - name: type
+    type: keyword
+    description: Record type (user or gemini).
+- name: gen_ai
+  type: group
+  fields:
+  - name: conversation
+    type: group
+    fields:
+    - name: id
+      type: keyword
+  - name: operation
+    type: group
+    fields:
+    - name: name
+      type: keyword
+  - name: provider
+    type: group
+    fields:
+    - name: name
+      type: keyword
+  - name: request
+    type: group
+    fields:
+    - name: model
+      type: keyword
+  - name: response
+    type: group
+    fields:
+    - name: finish_reasons
+      type: keyword
+    - name: id
+      type: keyword
+    - name: model
+      type: keyword
+  - name: system
+    type: keyword
+  - name: tool
+    type: group
+    fields:
+    - name: call
+      type: group
+      fields:
+      - name: id
+        type: keyword
+    - name: name
+      type: keyword
+  - name: usage
+    type: group
+    fields:
+    - name: cache_read
+      type: group
+      fields:
+      - name: input_tokens
+        type: long
+    - name: input_tokens
+      type: long
+    - name: output_tokens
+      type: long

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>How redaction works</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:620px}
+  .sub{font-size:16px;max-width:580px}
+  .z{max-width:640px}
+  .rules{margin-top:22px;max-width:590px;border-top:1px solid var(--ink)}
+  .rules div{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.45;color:var(--char)}
+  .rules b{font:600 11px var(--mono);color:var(--blue);padding-top:2px}
+  .rules i{font-style:normal;font-weight:600;color:var(--ink)}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:660px;top:30px;width:620px;height:640px}
+</style>
+</head>
+<body data-foot="Inference · How redaction works">
+<div class="z">
+  <div class="eyebrow in1">Redaction · <b>scan everywhere, replace everywhere</b></div>
+  <h1 class="in2">One secret, every copy. <span class="b">The value is never stored.</span></h1>
+  <p class="sub in3">A pasted token can appear four times in one record: in the content parts, in the flattened message, in a tool call's args and in the thoughts. Redaction finds it once and replaces all of them.</p>
+  <div class="rules in4">
+    <div><b>01</b><span><i>Scan</i> every string in <code>message</code>, <code>gemini_cli.content</code>, <code>toolCalls</code> and <code>thoughts</code>, recursively.</span></div>
+    <div><b>02</b><span><i>De-duplicate</i> by value. The first, most specific detector names the type.</span></div>
+    <div><b>03</b><span><i>Replace</i> longest values first, everywhere, with <code>[REDACTED:&lt;type&gt;]</code>. A private key goes whole, from its BEGIN banner to its END banner.</span></div>
+    <div><b>04</b><span><i>Record</i> <code>gemini_cli.secrets</code>: count, types, and type plus length per finding.</span></div>
+    <div><b>05</b><span><i>Fail closed:</i> if redaction cannot run, <code>message</code> becomes <code>[REDACTED:redaction_failed]</code>, the other text fields are dropped and the record is tagged <code>secret_redaction_failed</code>.</span></div>
+  </div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 620 640"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = EW.iso(document.getElementById('hero'), {ox: 250, oy: 215, s: .74});
+  const layers = ['thoughts', 'toolCalls', 'content', 'message'];
+  layers.forEach((name, li) => {
+    const z = li * 84;
+    sc.box({x: 0, y: 0, w: 260, d: 150, h: 4, z, c: 'white', delay: .1 + li * .12, drop: 50, snap: false});
+    for (let k = 0; k < 5; k++) sc.box({x: 22 + k * 46, y: 62, w: 26, d: 26, h: 18, z: z + 4, c: k === 2 ? 'orange' : 'slate', stroke: k === 2 ? undefined : false, delay: .4 + li * .12 + k * .03, drop: 50});
+    sc.label({at: [0, 150, z + 2], side: 'l', len: 40, title: name, raw: true, delay: 1.0 + li * .1});
+  });
+  sc.label({at: [140, 62, 252 + 22], side: 'r', len: 70, title: '[REDACTED:github_token]', sub: 'same value, every copy', raw: true, delay: 1.4});
+  sc.box({x: 300, y: 170, w: 70, d: 70, h: 54, z: 0, c: 'orange', delay: 1.1, drop: 70});
+  sc.label({at: [370, 170, 54], side: 'r', len: 30, title: 'gemini_cli.secrets', sub: ['type + length,', 'never the value'], raw: true, delay: 1.5});
+  sc.run();
+})();
+</script>
+</body>
+</html>

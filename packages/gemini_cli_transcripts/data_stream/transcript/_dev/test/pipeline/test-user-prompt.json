@@ -1,0 +1,31 @@
+{
+    "events": [
+        {
+            "log": { "file": { "path": "/home/alice/.gemini/tmp/shop/chats/session-2026-11-14T10-00-3f1c2b7e.jsonl" } },
+            "gemini_cli": {
+                "id": "6a1f0c2e-0000-4000-8000-000000000001",
+                "timestamp": "2026-11-14T10:00:00.000Z",
+                "type": "user",
+                "content": [ { "text": "add a retry to the payment client; the staging db password is Sup3rS3cret!42" } ]
+            }
+        },
+        {
+            "log": { "file": { "path": "/home/alice/.gemini/tmp/shop/chats/session-2026-11-14T10-00-3f1c2b7e.jsonl" } },
+            "gemini_cli": {
+                "id": "d04923d38bb0f6017037e74183378ef4",
+                "timestamp": "2026-11-14T09:59:58.000Z",
+                "type": "user",
+                "content": [ { "text": "<session_context>\nThis is the Gemini CLI. We are setting up the context for our chat.\n</session_context>" } ]
+            }
+        },
+        {
+            "log": { "file": { "path": "C:\\Users\\Bob\\.gemini\\tmp\\19cb3458520cc3d32aa01dcb5cbf86626b7d47d6e99fe9ff2184c5d201f5b2a1\\chats\\session-2026-11-14T11-05-9e8d7c6b.jsonl" } },
+            "gemini_cli": {
+                "id": "6a1f0c2e-0000-4000-8000-000000000002",
+                "timestamp": "2026-11-14T11:05:00.000Z",
+                "type": "user",
+                "content": [ { "text": "/memory show" } ]
+            }
+        }
+    ]
+}

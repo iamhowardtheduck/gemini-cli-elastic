@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loading the models</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:50px;line-height:1.02;letter-spacing:-1.8px;margin-top:20px;max-width:620px}
+  .sub{font-size:16px;max-width:580px;margin-top:16px}
+  code{font-family:var(--mono);font-size:.92em}
+  .steps{margin-top:22px;display:flex;flex-direction:column;gap:12px;max-width:600px}
+  .steps > div{display:grid;grid-template-columns:34px 1fr;gap:10px}
+  .steps b.k{font:500 30px var(--sans);color:var(--blue);letter-spacing:-1px;line-height:1}
+  .steps h3{font:600 15px var(--sans)}
+  .steps p{font-size:12.5px;line-height:1.45;color:var(--char);margin-top:2px}
+  .win{position:absolute;left:716px;top:120px;width:492px;border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--blue);z-index:3}
+  .win .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--ink);font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:8px}
+  .win pre{margin:0;padding:14px;font:400 11.5px/1.6 var(--mono);color:var(--char);white-space:pre-wrap}
+  .win pre .c{color:var(--grey)}
+  .win pre .b{color:var(--blue);font-weight:600}
+  .req{position:absolute;left:716px;top:470px;width:492px;border-top:1px solid var(--ink);z-index:3}
+  .req div{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font:400 12px var(--mono);color:var(--char)}
+  .req div span:first-child{width:120px;flex:none;font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--grey);padding-top:1px}
+  .cta{margin-top:20px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Models · Loading">
+<div class="z">
+  <div class="eyebrow in1">Get started · <b>before turning classification on</b></div>
+  <h1 class="in2">Import with Eland. <span class="b">Deploy. Then switch it on.</span></h1>
+  <p class="sub in3">The classify pipeline calls each model by its exact ID. Load all six before you enable <b>Prompt classification</b>, or every prompt records a classification error instead of categories.</p>
+  <div class="steps in4">
+    <div><b class="k">1</b><div><h3>Import from Hugging Face</h3><p><code>eland_import_hub_model</code> in Docker, with the exact <code>--es-model-id</code> and <code>--max-model-input-length</code> where shown. Never add <code>--quantize</code>: int8 crashed <code>pytorch_inference</code>.</p></div></div>
+    <div><b class="k">2</b><div><h3>Start the deployments</h3><p>One thread per allocation (<i>Optimized for ingest</i>). Fixed allocations on-prem, adaptive on Cloud and Serverless. Give most capacity to the zero-shot model.</p></div></div>
+    <div><b class="k">3</b><div><h3>Or let the script do both</h3><p><code>extras/setup.sh models</code> imports what is missing, starts or resizes each deployment to match the sizing file, and is safe to re-run. The same models serve both integrations: already deployed for Claude Code? Skip this step.</p></div></div>
+  </div>
+  <div class="cta in5"><a class="btn" href="https://github.com/iamhowardtheduck/gemini-cli-elastic" target="_blank" rel="noopener" style="text-decoration:none;pointer-events:auto;cursor:pointer;position:relative;z-index:6">claude-code-elastic&nbsp;&nbsp;↗</a></div>
+</div>
+<div class="win in4"><div class="bar"><i></i><i></i><i></i><span>extras/setup.sh</span></div>
+<pre><span class="c"># vector mapping on logs-gemini_cli.transcript@custom</span>
+extras/setup.sh inference-mapping
+<span class="c"># import + deploy, fixed sizing (on-prem)</span>
+extras/setup.sh <span class="b">models</span>
+<span class="c"># Elastic Cloud: adaptive sizing</span>
+MODELS_FILE=extras/models/profiles/adaptive.json \
+  extras/setup.sh <span class="b">models</span>
+<span class="c"># check, then try one prompt</span>
+extras/setup.sh models-status
+extras/setup.sh classify "delete every index"</pre></div>
+<div class="req in5">
+  <div><span>Licence</span><span>Platinum or Enterprise, or a trial, for third-party NLP models</span></div>
+  <div><span>ML memory</span><span>about 10 GB for a small setup, more with zero-shot allocations</span></div>
+  <div><span>Embedding</span><span>EIS: built in on Cloud and Serverless, Cloud Connect on self-managed</span></div>
+  <div><span>Importer</span><span>Docker, and HTTPS to huggingface.co</span></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

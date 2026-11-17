@@ -1,0 +1,166 @@
+{
+    "events": [
+        {
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "gemini_cli": {
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "timestamp": "2026-11-14T12:00:05.000Z",
+                "type": "gemini",
+                "content": "",
+                "thoughts": [
+                    {
+                        "subject": "Checking the repository",
+                        "description": "I'll list the branches first.",
+                        "timestamp": "2026-11-14T12:00:05.000Z"
+                    }
+                ],
+                "tokens": {
+                    "input": 11539,
+                    "output": 39,
+                    "cached": 9465,
+                    "thoughts": 175,
+                    "tool": 0,
+                    "total": 11753
+                },
+                "model": "gemini-3-pro-preview"
+            }
+        },
+        {
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "gemini_cli": {
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "timestamp": "2026-11-14T12:00:05.000Z",
+                "type": "gemini",
+                "content": "",
+                "thoughts": [
+                    {
+                        "subject": "Checking the repository",
+                        "description": "I'll list the branches first.",
+                        "timestamp": "2026-11-14T12:00:05.000Z"
+                    }
+                ],
+                "tokens": {
+                    "input": 11539,
+                    "output": 39,
+                    "cached": 9465,
+                    "thoughts": 175,
+                    "tool": 0,
+                    "total": 11753
+                },
+                "model": "gemini-3-pro-preview",
+                "toolCalls": [
+                    {
+                        "id": "run_shell_command__call_1001",
+                        "name": "run_shell_command",
+                        "args": {
+                            "command": "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123456789 git ls-remote origin",
+                            "description": "List remote branches"
+                        },
+                        "result": [
+                            {
+                                "functionResponse": {
+                                    "id": "run_shell_command__call_1001",
+                                    "name": "run_shell_command",
+                                    "response": {
+                                        "output": "a1b2c3\trefs/heads/main"
+                                    }
+                                }
+                            }
+                        ],
+                        "status": "success",
+                        "timestamp": "2026-11-14T12:00:07.000Z",
+                        "resultDisplay": [
+                            [
+                                {
+                                    "text": "a1b2c3 refs/heads/main",
+                                    "bold": false
+                                }
+                            ]
+                        ],
+                        "description": "git ls-remote origin",
+                        "displayName": "Shell",
+                        "renderOutputAsMarkdown": false
+                    },
+                    {
+                        "id": "read_file__call_1002",
+                        "name": "read_file",
+                        "args": {
+                            "absolute_path": "/Users/carol/api/README.md"
+                        },
+                        "status": "error",
+                        "timestamp": "2026-11-14T12:00:07.500Z",
+                        "displayName": "ReadFile",
+                        "renderOutputAsMarkdown": true
+                    }
+                ]
+            }
+        },
+        {
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "gemini_cli": {
+                "id": "7b2e1d3f-0000-4000-8000-000000000011",
+                "timestamp": "2026-11-14T12:00:12.000Z",
+                "type": "gemini",
+                "content": "The remote has one branch, **main**.",
+                "thoughts": [],
+                "tokens": {
+                    "input": 11992,
+                    "output": 12,
+                    "cached": 9568,
+                    "thoughts": 10,
+                    "tool": 0,
+                    "total": 12014
+                },
+                "model": "gemini-3-pro-preview"
+            }
+        },
+        {
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "gemini_cli": {
+                "id": "7b2e1d3f-0000-4000-8000-000000000012",
+                "timestamp": "2026-11-14T12:01:00.000Z",
+                "type": "gemini",
+                "content": "",
+                "thoughts": [],
+                "tokens": {
+                    "input": 12100,
+                    "output": 20,
+                    "cached": 9568,
+                    "thoughts": 0,
+                    "tool": 0,
+                    "total": 12120
+                },
+                "model": "gemini-3-pro-preview",
+                "toolCalls": [
+                    {
+                        "id": "web_fetch__call_1003",
+                        "name": "web_fetch",
+                        "args": {
+                            "prompt": "Summarise https://example.com/release-notes and compare with https://paste.ee/p/AbC123."
+                        },
+                        "status": "success",
+                        "timestamp": "2026-11-14T12:01:03.000Z",
+                        "displayName": "WebFetch",
+                        "renderOutputAsMarkdown": true
+                    }
+                ]
+            }
+        }
+    ]
+}

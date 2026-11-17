@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lessons</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:1100px}
+  .sub{font-size:16px;max-width:900px}
+  .list{position:absolute;left:72px;right:72px;top:262px;z-index:2;border-top:1px solid var(--ink)}
+  .it{display:grid;grid-template-columns:200px 1fr 230px;gap:24px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line)}
+  .it .tag{color:var(--grey);font-weight:500}
+  .it .tag b{color:var(--ink);font-weight:600;display:block;margin-bottom:2px}
+  .it p{font-size:13.5px;line-height:1.5;color:var(--char)}
+  .it .fix{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--teal-d)}
+  .it .fix.red{color:#E0352B}
+  code{font-family:var(--mono);font-size:.92em}
+</style>
+</head>
+<body data-foot="Load test · Reading the numbers">
+<div class="z">
+  <div class="eyebrow in1">Reading the numbers · <b>what this test does and does not show</b></div>
+  <h1 class="in2">Five notes before reusing these numbers. <span class="b">None change the conclusion.</span></h1>
+  <p class="sub in3">One self-managed cluster, one generator, both products back to back. Here is what that covers, and what it leaves to other tests.</p>
+</div>
+<div class="list">
+  <div class="it in3"><span class="tag"><b>Documents</b>3 records per tool call</span><p>Gemini CLI writes a model message, the same message with its tool calls, and the tool response: 32 documents per prompt here, 22 for Claude Code.</p><span class="fix">≈1.45× documents, same ML</span></div>
+  <div class="it in4"><span class="tag"><b>Run 1</b>saturation probe</span><p>The run that found the 0.5 prompts/s ceiling used Claude Code records. Run 2 measured both products and found the same ML cost per prompt.</p><span class="fix">ceiling applies to both</span></div>
+  <div class="it in4"><span class="tag"><b>Last step</b>0.45 prompts/s</span><p>Gemini CLI's classifier p50 was 16% higher than Claude Code's (32.2 vs 27.8 s). Below that step the two are within noise.</p><span class="fix">0.45 is the edge, not headroom</span></div>
+  <div class="it in5"><span class="tag"><b>Prompt mix</b>unique prompts</span><p>Unique task prompts, 3% adversarial and 2% with secrets, so repeated input does not flatter the model timings.</p><span class="fix">timings not flattered</span></div>
+  <div class="it in6"><span class="tag"><b>Elastic Cloud</b>not run with Gemini CLI</span><p>ML autoscaling and the inference cache were measured only in the 2026-11-15 Claude Code test on Elastic Cloud Hosted. See the combined load-test deck.</p><span class="fix red">no Gemini CLI Cloud numbers</span></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+{
+    "expected": [
+        {
+            "@timestamp": "2026-11-14T12:00:05.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "assistant-thinking",
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": ""
+                    }
+                ],
+                "human_prompt": false,
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "model": "gemini-3-pro-preview",
+                "project": "api",
+                "session_kind": "main",
+                "thoughts": [
+                    {
+                        "description": "I'll list the branches first.",
+                        "subject": "Checking the repository",
+                        "timestamp": "2026-11-14T12:00:05.000Z"
+                    }
+                ],
+                "tokens": {
+                    "cached": 9465,
+                    "input": 11539,
+                    "output": 39,
+                    "thoughts": 175,
+                    "tool": 0,
+                    "total": 11753
+                },
+                "type": "gemini"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T12-00-5b4a3c2d"
+                },
+                "operation": {
+                    "name": "chat"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "response": {
+                    "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                    "model": "gemini-3-pro-preview"
+                },
+                "system": "gcp.gemini",
+                "usage": {
+                    "cache_read": {
+                        "input_tokens": 9465
+                    },
+                    "input_tokens": 11539,
+                    "output_tokens": 214
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "related": {
+                "user": [
+                    "carol"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "carol"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T12:00:05.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "tool-use",
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "kind": "event",
+                "outcome": "failure"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": ""
+                    }
+                ],
+                "human_prompt": false,
+                "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                "model": "gemini-3-pro-preview",
+                "project": "api",
+                "secrets": {
+                    "count": 1,
+                    "findings": [
+                        {
+                            "length": 40,
+                            "type": "github_token"
+                        }
+                    ],
+                    "redacted": true,
+                    "types": [
+                        "github_token"
+                    ]
+                },
+                "session_kind": "main",
+                "thoughts": [
+                    {
+                        "description": "I'll list the branches first.",
+                        "subject": "Checking the repository",
+                        "timestamp": "2026-11-14T12:00:05.000Z"
+                    }
+                ],
+                "toolCalls": [
+                    {
+                        "args": {
+                            "command": "GITHUB_TOKEN=[REDACTED:github_token] git ls-remote origin",
+                            "description": "List remote branches"
+                        },
+                        "description": "git ls-remote origin",
+                        "displayName": "Shell",
+                        "id": "run_shell_command__call_1001",
+                        "name": "run_shell_command",
+                        "renderOutputAsMarkdown": false,
+                        "status": "success",
+                        "timestamp": "2026-11-14T12:00:07.000Z"
+                    },
+                    {
+                        "args": {
+                            "absolute_path": "/Users/carol/api/README.md"
+                        },
+                        "displayName": "ReadFile",
+                        "id": "read_file__call_1002",
+                        "name": "read_file",
+                        "renderOutputAsMarkdown": true,
+                        "status": "error",
+                        "timestamp": "2026-11-14T12:00:07.500Z"
+                    }
+                ],
+                "tool_input": {
+                    "command": [
+                        "GITHUB_TOKEN=[REDACTED:github_token] git ls-remote origin"
+                    ],
+                    "description": [
+                        "List remote branches"
+                    ],
+                    "file_path": [
+                        "/Users/carol/api/README.md"
+                    ]
+                },
+                "tool_names": [
+                    "run_shell_command",
+                    "read_file"
+                ],
+                "type": "gemini"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T12-00-5b4a3c2d"
+                },
+                "operation": {
+                    "name": "chat"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "response": {
+                    "id": "7b2e1d3f-0000-4000-8000-000000000010",
+                    "model": "gemini-3-pro-preview"
+                },
+                "system": "gcp.gemini",
+                "tool": {
+                    "call": {
+                        "id": [
+                            "run_shell_command__call_1001",
+                            "read_file__call_1002"
+                        ]
+                    },
+                    "name": [
+                        "run_shell_command",
+                        "read_file"
+                    ]
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "related": {
+                "user": [
+                    "carol"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "carol"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T12:00:12.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "assistant-response",
+                "id": "7b2e1d3f-0000-4000-8000-000000000011",
+                "kind": "event"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": "The remote has one branch, **main**."
+                    }
+                ],
+                "human_prompt": false,
+                "id": "7b2e1d3f-0000-4000-8000-000000000011",
+                "model": "gemini-3-pro-preview",
+                "project": "api",
+                "session_kind": "main",
+                "thoughts": [],
+                "tokens": {
+                    "cached": 9568,
+                    "input": 11992,
+                    "output": 12,
+                    "thoughts": 10,
+                    "tool": 0,
+                    "total": 12014
+                },
+                "type": "gemini"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T12-00-5b4a3c2d"
+                },
+                "operation": {
+                    "name": "chat"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "response": {
+                    "id": "7b2e1d3f-0000-4000-8000-000000000011",
+                    "model": "gemini-3-pro-preview"
+                },
+                "system": "gcp.gemini",
+                "usage": {
+                    "cache_read": {
+                        "input_tokens": 9568
+                    },
+                    "input_tokens": 11992,
+                    "output_tokens": 22
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "message": "The remote has one branch, **main**.",
+            "related": {
+                "user": [
+                    "carol"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "carol"
+            }
+        },
+        {
+            "@timestamp": "2026-11-14T12:01:00.000Z",
+            "data_stream": {
+                "dataset": "gemini_cli.transcript",
+                "namespace": "default",
+                "type": "logs"
+            },
+            "ecs": {
+                "version": "9.3.0"
+            },
+            "event": {
+                "action": "tool-use",
+                "id": "7b2e1d3f-0000-4000-8000-000000000012",
+                "kind": "event",
+                "outcome": "success"
+            },
+            "gemini_cli": {
+                "content": [
+                    {
+                        "text": ""
+                    }
+                ],
+                "human_prompt": false,
+                "id": "7b2e1d3f-0000-4000-8000-000000000012",
+                "model": "gemini-3-pro-preview",
+                "project": "api",
+                "session_kind": "main",
+                "thoughts": [],
+                "toolCalls": [
+                    {
+                        "args": {
+                            "prompt": "Summarise https://example.com/release-notes and compare with https://paste.ee/p/AbC123."
+                        },
+                        "displayName": "WebFetch",
+                        "id": "web_fetch__call_1003",
+                        "name": "web_fetch",
+                        "renderOutputAsMarkdown": true,
+                        "status": "success",
+                        "timestamp": "2026-11-14T12:01:03.000Z"
+                    }
+                ],
+                "tool_input": {
+                    "url": [
+                        "https://example.com/release-notes",
+                        "https://paste.ee/p/AbC123"
+                    ]
+                },
+                "tool_names": [
+                    "web_fetch"
+                ],
+                "type": "gemini"
+            },
+            "gen_ai": {
+                "conversation": {
+                    "id": "session-2026-11-14T12-00-5b4a3c2d"
+                },
+                "operation": {
+                    "name": "chat"
+                },
+                "provider": {
+                    "name": "gcp.gemini"
+                },
+                "response": {
+                    "id": "7b2e1d3f-0000-4000-8000-000000000012",
+                    "model": "gemini-3-pro-preview"
+                },
+                "system": "gcp.gemini",
+                "tool": {
+                    "call": {
+                        "id": [
+                            "web_fetch__call_1003"
+                        ]
+                    },
+                    "name": [
+                        "web_fetch"
+                    ]
+                }
+            },
+            "log": {
+                "file": {
+                    "path": "/Users/carol/.gemini/tmp/api/chats/session-2026-11-14T12-00-5b4a3c2d.jsonl"
+                }
+            },
+            "related": {
+                "user": [
+                    "carol"
+                ]
+            },
+            "service": {
+                "name": "gemini-cli"
+            },
+            "user": {
+                "name": "carol"
+            }
+        }
+    ]
+}

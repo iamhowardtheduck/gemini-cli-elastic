@@ -1,0 +1,36 @@
+module.exports = {
+  style: 'elastic-web',
+  name: 'gemini-cli-transcripts-inference',
+  title: 'Gemini CLI Transcripts: Inference and Redaction',
+  port: 30022,
+
+  slides: [
+    '01-cover.html',
+    '02-path.html',
+    '03-detectors.html',
+    '04-redact-how.html',
+    '05-embedding.html',
+    '06-semantic.html',
+    '07-single-pass.html',
+    '08-zero-shot.html',
+    '09-document.html',
+    '10-time.html',
+    '11-tuning.html',
+    '12-closing.html',
+  ],
+
+  labels: [
+    'Cover',
+    'The path of a prompt',
+    'Secret detectors',
+    'How redaction works',
+    'Embedding',
+    'Semantic threat flags',
+    'Single-pass classifiers',
+    'Zero-shot passes',
+    'The classified document',
+    'Where the time goes',
+    'Tuning',
+    'Takeaway',
+  ],
+};

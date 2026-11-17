@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Saturation</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:570px}
+  .sub{font-size:15.5px;max-width:530px}
+  .facts{margin-top:22px;display:flex;flex-direction:column;gap:12px;max-width:530px}
+  .fact{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
+  .fact .v{font:500 30px var(--sans);letter-spacing:-1px;color:var(--blue)}
+  .fact .v.red{color:#E0352B}
+  .fact p{font-size:13.5px;line-height:1.45;color:var(--char)}
+  .note{margin-top:16px;max-width:530px;font-size:12.5px;line-height:1.5;color:var(--char);border-left:3px solid var(--orange);padding-left:12px}
+  #chart{position:absolute;left:660px;top:120px;width:560px;height:470px;z-index:2}
+  #chart text{font-family:var(--mono);font-size:10.5px;fill:var(--grey)}
+  #chart .ttl{font-weight:600;fill:var(--ink);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+  .draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.4,0,.2,1) .3s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+</style>
+</head>
+<body data-foot="Load test · Run 1">
+<div class="z">
+  <div class="eyebrow in1">Run 1 · <b>18 zero-shot allocations, 24 logical CPUs</b></div>
+  <h1 class="in2">0.25 prompts/s held. <span class="b">At 0.5 the queue ran away.</span></h1>
+  <p class="sub in3">The zero-shot model runs five passes per prompt. Once arrivals outpaced the allocations, every bulk request waited for the queue.</p>
+  <div class="facts">
+    <div class="fact in4"><span class="v">900/h</span><p>held at 0.25 prompts/s: zero-shot queue 5 to 10, bulk requests 30 to 40 s.</p></div>
+    <div class="fact in5"><span class="v red">1,800/h</span><p>saturated within about 2 minutes. The queue grew without bound and bulks reached the 120 s client timeout.</p></div>
+    <div class="fact in6"><span class="v red">392</span><p>zero-shot requests pending when the run was stopped at 1.5 prompts/s.</p></div>
+  </div>
+  <p class="note in6">Run 1 used Claude Code records. Run 2 shows the ML cost per prompt is the same for Gemini CLI, so this ceiling applies to both.</p>
+</div>
+<svg id="chart" viewBox="0 0 560 470"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  // measured every 30 s (loadgen report lines); steps 0.25 / 0.5 / 1 / 1.5 prompts/s, 4 min each, stopped early in 1.5
+  const q = [6,9,5,10,6,9,5, 5,12,20,30,39,49,63,74, 85,106,131,156,180,202,230,256, 275,314,352,392];
+  const lat = [null,32.2,34.0,39.9,34.6,35.5,31.3, 28.5,26.1,49.0,null,90.5,109.1,120.1,120.1, 120.1,120.1,120.1,120.1,120.1,120.1,120.1,120.1, 120.1,120.1,120.1,120.1];
+  const svg = document.getElementById('chart'), L = 52, R = 505, T = 40, B = 400;
+  const X = i => L + (R - L) * i / (q.length - 1), Y = v => B - (B - T) * v / 400, Y2 = v => B - (B - T) * v / 133.33;
+  const g = (t, a, p) => EW.el(t, a, p || svg);
+  g('text', {x: L, y: 18, class: 'ttl'}).textContent = 'Zero-shot queue and bulk latency, measured';
+  [0, 100, 200, 300, 400].forEach(v => { g('line', {x1: L, x2: R, y1: Y(v), y2: Y(v), stroke: '#DDE3EC'}); g('text', {x: L - 8, y: Y(v) + 4, 'text-anchor': 'end'}).textContent = v; });
+  [0, 40, 80, 120].forEach(v => { g('text', {x: R + 8, y: Y2(v) + 4}).textContent = v + ' s'; });
+  // step bands
+  const xb = i => Math.max(L, Math.min(R, X(i)));
+  [[-.5, 6.5, '0.25/s'], [6.5, 14.5, '0.5/s'], [14.5, 22.5, '1/s'], [22.5, 26, '1.5/s']].forEach(([a, b, t], k) => {
+    g('rect', {x: xb(a), y: T, width: xb(b) - xb(a), height: B - T, fill: k % 2 ? '#F5F7FA' : 'none'});
+    g('text', {x: (xb(a) + xb(b)) / 2, y: B + 18, 'text-anchor': 'middle'}).textContent = t;
+  });
+  g('text', {x: L, y: B + 40}).textContent = 'requests queued';
+  g('text', {x: R, y: B + 40, 'text-anchor': 'end'}).textContent = 'p50 bulk latency (s)';
+  g('line', {x1: L, x2: R, y1: Y2(120), y2: Y2(120), stroke: '#E0352B', 'stroke-dasharray': '4 4'});
+  g('text', {x: L + 6, y: Y2(120) - 6, style: 'fill:#E0352B'}).textContent = '120 s client timeout';
+  const lp = lat.map((v, i) => v == null ? null : [X(i), Y2(v)]).filter(Boolean).map(p => p.join(',')).join(' ');
+  g('polyline', {points: lp, fill: 'none', stroke: '#B5BFCE', 'stroke-width': 2, class: 'draw'});
+  g('polyline', {points: q.map((v, i) => X(i) + ',' + Y(v)).join(' '), fill: 'none', stroke: '#0B64DD', 'stroke-width': 3, class: 'draw'});
+  const n = q.length - 1;
+  const end = g('circle', {cx: X(n), cy: Y(392), r: 5, fill: '#E0352B', opacity: 0});
+  end.animate([{opacity: 0}, {opacity: 1}], {duration: 300, delay: 1500, fill: 'forwards'});
+  g('text', {x: X(n) - 10, y: Y(392) + 4, 'text-anchor': 'end', style: 'fill:#1D1E24'}).textContent = '392 queued';
+})();
+</script>
+</body>
+</html>

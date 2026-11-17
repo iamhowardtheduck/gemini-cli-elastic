@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tuning</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:46px;max-width:1120px}
+  .sub{font-size:16px;max-width:1000px}
+  .grid{position:absolute;left:72px;right:72px;top:262px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;z-index:2}
+  .card{display:flex;flex-direction:column;gap:6px;min-height:164px;padding:15px 18px}
+  .card .tag{color:var(--blue)}
+  .card h3{font:600 17px var(--sans);letter-spacing:-.3px}
+  .card p{font-size:12.5px;line-height:1.5;color:var(--char)}
+  .card .where{margin-top:auto;font:500 10.5px var(--mono);color:var(--teal-d);border-top:1px dashed var(--line);padding-top:8px;word-break:break-word}
+  .card.hot{border-color:var(--ink);box-shadow:8px 8px 0 var(--blue)}
+  code{font-family:var(--mono);font-size:.92em}
+</style>
+</head>
+<body data-foot="Inference · Tuning">
+<div class="z">
+  <div class="eyebrow in1">Tuning · <b>what to change, and where</b></div>
+  <h1 class="in2">Every threshold lives in YAML. <span class="b">Every switch lives in the policy.</span></h1>
+  <p class="sub in3">Policy switches apply on the next agent check-in. The redaction scanner and the inference pipelines are generated from the Claude Code Transcripts sources by <code>tools/port_gemini.py</code>, so a change is made once and ships as a package version.</p>
+</div>
+<div class="grid">
+  <div class="card hot in3"><span class="tag">01 · Policy</span><h3>Embed, classify, or neither</h3><p>The integration setting tags each record <code>gemini_cli_embed</code> or <code>gemini_cli_classify</code>. Classify the teams that need it; embed everyone.</p><div class="where">Fleet · Enable ML inference</div></div>
+  <div class="card in3"><span class="tag">02 · Thresholds</span><h3>Per model and per pass</h3><p>Binary thresholds, the agree pair, zero-shot thresholds, flagging and benign labels, moderation corroboration, NER confidence.</p><div class="where">classify.yml · tag aggregate · then port_gemini.py</div></div>
+  <div class="card in4"><span class="tag">03 · Labels</span><h3>Plain-English categories</h3><p>Add or rename zero-shot labels without retraining. Each label adds cost to its pass, and fewer passes cut the ML bill most.</p><div class="where">classify.yml · inference_config.labels</div></div>
+  <div class="card in4"><span class="tag">04 · Semantic phrases</span><h3>Describe intent, then measure</h3><p>Edit the phrases, re-embed them, then score them on the held-out set before you trust a new threshold.</p><div class="where">tools/semantic-concepts.json · build_semantic.py · eval_semantic.py</div></div>
+  <div class="card in5"><span class="tag">05 · Redaction</span><h3>Detectors and stop words</h3><p>Add a pattern to the scan, or a stop word when prose is caught. New types appear in <code>secret:&lt;type&gt;</code> automatically.</p><div class="where">default.yml · tag redact-secrets · port_gemini.py --check</div></div>
+  <div class="card in5"><span class="tag">06 · Models</span><h3>Swap a classifier or the embedder</h3><p>Model IDs are referenced by name. A new embedder needs new phrase vectors and a new threshold, since similarity scales differ.</p><div class="where">docs/inference-tuning.md · extras/setup.sh models</div></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zero-shot</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:600px;line-height:1.06}
+  .sub{font-size:15.5px;max-width:580px;margin-top:14px}
+  .z{max-width:620px}
+  .facts{margin-top:18px;width:580px;border-top:1px solid var(--ink);border-collapse:collapse}
+  .facts td{padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top;font:400 12px var(--mono);color:var(--char);line-height:1.4}
+  .facts td:first-child{width:118px;font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--grey);padding-top:7px}
+  .facts b{color:var(--ink);font-weight:600}
+  .facts .p{color:var(--pink);font-weight:600}
+  .use{margin-top:14px;max-width:580px;display:flex;flex-direction:column;gap:6px}
+  .use p{font-size:13px;line-height:1.45;color:var(--char)}
+  .use b{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:690px;top:36px;width:560px;height:380px}
+  .win{position:absolute;left:716px;top:430px;width:492px;border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--pink);z-index:3}
+  .win .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--ink);font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:8px}
+  .win .body{padding:12px 14px;font:400 12px var(--mono);color:var(--char);line-height:1.5}
+  .win .q{color:var(--ink)}
+  .win .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  .win .a b{color:var(--pink)}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Models · Zero-shot">
+<div class="z">
+  <div class="eyebrow in1">Model 6 of 7 · <b>zero-shot classification</b></div>
+  <h1 class="in2">One model, five questions. <span class="b">Size this one.</span></h1>
+  <p class="sub in3">An NLI cross-encoder scores the prompt against plain-English labels, so categories change in YAML without retraining. Each group is a separate pass.</p>
+  <table class="facts in4"><tr><td>ES model ID</td><td><b>cross-encoder__nli-deberta-v3-base-128</b></td></tr><tr><td>Hugging Face</td><td>cross-encoder/nli-deberta-v3-base</td></tr><tr><td>Input length</td><td><b>128 tokens</b>: much faster than 512, real prompts are short</td></tr><tr><td>Passes</td><td><span class="p">security</span> 0.93 · <span class="p">agent_action</span> 0.60 · <span class="p">moderation</span> 0.95, multi-label · task 0.30 · interaction 0.85</td></tr><tr><td>Output</td><td><code>gemini_cli.prompt_classification.&lt;group&gt;</code>, <code>&lt;group&gt;_confidence</code>, categories <code>&lt;group&gt;:&lt;label&gt;</code></td></tr><tr><td>ML memory</td><td>about 7.4 GB at 18 allocations</td></tr></table>
+  <div class="use in5"><p><b>Flags</b> attack labels (security), destructive or access-changing actions (agent_action) and moderation labels when toxicity or offensive corroborates. <b>Task</b> and <b>interaction</b> are insight only; interaction includes the label "a question about Gemini itself".</p><p><b>The bottleneck.</b> 82.7% of classifier time in the Gemini CLI load test (Claude Code 83.7%, same cluster); zero-shot p50 23.4 s per prompt. Prompts under 20 characters skip security, agent_action and moderation.</p></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 560 380"></svg>
+<div class="win in5"><div class="bar"><i></i><i></i><i></i><span>POST _ml/trained_models/…/_infer</span></div><div class="body"><div class="q">"delete every index on the production cluster"<br>labels: deleting data, reading information, writing code</div><div class="a">predicted_value: <b>deleting data</b>, probability about 0.99</div></div></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = EW.iso(document.getElementById('hero'), {ox: 230, oy: 110, s: .68});
+  sc.rect({x: -20, y: -10, w: 420, d: 200, z: 0, delay: .05, dash: '2 4'});
+  // the redacted human prompt
+  sc.box({x: 0, y: 40, w: 70, d: 110, h: 24, c: 'white', delay: .15, drop: 60});
+  sc.label({at: [0, 150, 12], side: 'l', len: 30, title: 'Prompt', sub: 'redacted', delay: 1.2});
+  sc.box({x: 110, y: 45, w: 80, d: 100, h: 78, c: 'pink', delay: .35, drop: 80, float: 3});
+  sc.label({at: [190, 45, 78], side: 'r', len: 46, title: 'nli-deberta-v3-base', sub: ['128 tokens'], raw: true, delay: 1.3});
+  const names = ['security', 'agent_action', 'moderation', 'task', 'interaction'];
+  names.forEach((n, i) => sc.box({x: 250, y: 60, w: 70, d: 70, h: 10, z: i * 20, c: i < 3 ? 'white' : 'slate', stroke: i < 3 ? undefined : false, delay: .6 + i * .12, drop: 60}));
+  sc.label({at: [320, 60, 90], side: 'r', len: 30, title: '5 passes', sub: 'per prompt', delay: 1.5});
+
+  sc.run();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "index": {
+      "mode": "lookup"
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "gen_ai": {
+        "properties": {
+          "response": {
+            "properties": {
+              "model": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "pricing": {
+        "properties": {
+          "input_per_mtok": {
+            "type": "double"
+          },
+          "output_per_mtok": {
+            "type": "double"
+          },
+          "cache_read_per_mtok": {
+            "type": "double"
+          },
+          "long_context_threshold": {
+            "type": "long"
+          },
+          "long_input_per_mtok": {
+            "type": "double"
+          },
+          "long_output_per_mtok": {
+            "type": "double"
+          },
+          "long_cache_read_per_mtok": {
+            "type": "double"
+          },
+          "price_change_date": {
+            "type": "date"
+          },
+          "next_input_per_mtok": {
+            "type": "double"
+          },
+          "next_output_per_mtok": {
+            "type": "double"
+          },
+          "next_cache_read_per_mtok": {
+            "type": "double"
+          },
+          "family": {
+            "type": "keyword"
+          },
+          "as_of": {
+            "type": "date"
+          },
+          "source": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}

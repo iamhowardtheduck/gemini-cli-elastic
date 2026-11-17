@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Embedding only</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:40px;letter-spacing:-1.2px;max-width:1140px}
+  .sub{font-size:16px;max-width:920px;margin-top:10px}
+  .cols{position:absolute;left:72px;right:72px;top:240px;bottom:76px;display:grid;grid-template-columns:repeat(2,1fr);z-index:2}
+  .col{padding:0 30px;border-left:1px solid var(--ink);display:flex;flex-direction:column}
+  .col:first-child{padding-left:0;border-left:0}
+  .col:last-child{padding-right:0}
+  .col .tag{margin-bottom:14px}
+  .big{display:flex;align-items:flex-end;gap:12px;height:88px}
+  .big .pre{white-space:nowrap;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey);padding-bottom:12px}
+  .big .stat{font-size:88px}
+  .big .post{font-size:14px;line-height:1.35;color:var(--char);padding-bottom:10px}
+  .vs{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+  .vs div{font:400 12.5px var(--mono);color:var(--char)}
+  .vs b{color:var(--blue);font-weight:600;margin-right:6px}
+  .chart{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line)}
+  .chart .tag{font-size:10px;color:var(--grey);font-weight:500;margin-bottom:10px}
+  .bar{display:grid;grid-template-columns:110px 1fr 76px;align-items:center;gap:10px;margin-bottom:7px;font:400 11.5px var(--mono);color:var(--char)}
+  .bar .tr{height:10px;background:var(--bg);position:relative}
+  .bar .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--slate);transform-origin:left;animation:grow 1.1s cubic-bezier(.2,.7,.2,1) both}
+  .bar.es .tr i{background:var(--blue)}
+  .bar.es{color:var(--ink);font-weight:600}
+  .bar span:last-child{text-align:right}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+  .how{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+  .how .tag{font-size:10px;color:var(--blue);margin-bottom:6px}
+  .how p{font-size:13px;line-height:1.5;color:var(--char)}
+  .how p b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body data-foot="Load test · Embedding only">
+<div class="z">
+  <div class="eyebrow in1">Run 2 · <b>Gemini CLI, embedding only</b></div>
+  <h1 class="in2">Classification off, ingest is easy. <span class="b">Zero errors at 3 prompts/s.</span></h1>
+  <p class="sub in3">720 prompts and 23,040 records in 6 minutes, every one indexed. Embeddings run on the Elastic Inference Service, so no ML node is involved.</p>
+</div>
+<div class="cols">
+  <div class="col in3">
+    <div class="tag">01 · Throughput</div>
+    <div class="big"><span class="pre">up to</span><span class="stat" data-n="3">3</span><span class="post">prompts a second,<br>10,800 an hour</span></div>
+    <div class="vs"><div><b>0</b>indexing or embedding errors at either step</div><div><b>3/s</b>was the highest step run, not a measured limit</div></div>
+    <div class="chart">
+      <div class="tag">Records sent per second</div>
+      <div class="bar"><span>1 prompt/s</span><div class="tr"><i style="width:33%;animation-delay:.6s"></i></div><span>32</span></div>
+      <div class="bar es"><span>3 prompts/s</span><div class="tr"><i style="width:100%;animation-delay:.7s"></i></div><span>96</span></div>
+      <div class="bar"><span>Claude, 3/s</span><div class="tr"><i style="width:69%;animation-delay:.8s"></i></div><span>66</span></div>
+    </div>
+    <div class="how"><div class="tag">How</div><p>Each prompt carried <b>20 tool calls, 3 records each</b>: 32 records a prompt, against 22 for Claude Code.</p></div>
+  </div>
+  <div class="col in4">
+    <div class="tag">02 · Latency</div>
+    <div class="big"><span class="pre">p50</span><span class="stat" data-n="60" data-post=" ms">60 ms</span><span class="post">embedding time<br>per prompt at 3/s</span></div>
+    <div class="vs"><div><b>57-60 ms</b>Gemini CLI embedding p50 at 3 prompts/s</div><div><b>≈60-70 ms</b>embedding p50 for both products across run 2</div></div>
+    <div class="chart">
+      <div class="tag">Bulk request p50, scale 0 to 0.5 s</div>
+      <div class="bar"><span>1 prompt/s</span><div class="tr"><i style="width:60%;animation-delay:1.0s"></i></div><span>0.3 s</span></div>
+      <div class="bar es"><span>3 prompts/s</span><div class="tr"><i style="width:60%;animation-delay:1.1s"></i></div><span>0.2-0.3 s</span></div>
+    </div>
+    <div class="how"><div class="tag">How</div><p><b>Latency did not move</b> between 1 and 3 prompts/s. Classified, the same bulks took 25 to 41 s (p50): the cost is the classifiers.</p></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+document.querySelectorAll('.stat[data-n]').forEach(s => EW.count(s, +s.dataset.n, {dec: +(s.dataset.dec || 0), post: s.dataset.post || '', delay: .35, dur: 1.2}));
+</script>
+</body>
+</html>

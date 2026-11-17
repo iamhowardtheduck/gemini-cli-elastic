@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: The problem</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+h1{font-size:48px;max-width:560px}
+.rows{margin-top:34px;max-width:520px;position:relative;z-index:2}
+.row{padding:16px 0;border-top:1px solid var(--line)}
+.row:last-child{border-bottom:1px solid var(--line)}
+.row .tag{margin-bottom:6px}
+.row .cap{font-size:15px}
+#scene{left:620px;top:40px;width:660px;height:620px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · The problem">
+<div class="z">
+  <div class="eyebrow in1">The problem</div>
+  <h1 class="in2">Coding agents act on real machines. <span class="b">Nobody is watching.</span></h1>
+  <div class="rows">
+    <div class="row in3"><div class="tag">01 · Blind spot</div><p class="cap">Gemini CLI runs <span class="mono">rm</span>, <span class="mono">curl</span> and <span class="mono">git push</span>. EDR sees a shell, not the prompt that caused it.</p></div>
+    <div class="row in4"><div class="tag">02 · The record deletes itself</div><p class="cap">Chats sit as JSONL in <span class="mono">~/.gemini/tmp</span>, one laptop at a time, and are removed after 30 days.</p></div>
+    <div class="row in5"><div class="tag">03 · No answers</div><p class="cap">Who uses it, on which projects, at what cost? Did a secret just get pasted into a prompt? Nobody can say.</p></div>
+  </div>
+</div>
+<svg id="scene" class="iso" viewBox="0 0 660 620"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+EW.dots({x: 660, y: 60, w: 600, h: 580, seed: 9, blobs: 5, thr: .55});
+const sc = EW.iso(document.getElementById('scene'), {ox: 310, oy: 140, s: .7});
+const data = [];
+const cols = ['teal', 'yellow', 'blue', 'orange'];
+[0, 170, 340].forEach((y, i) => {
+  sc.box({x: 0, y, w: 150, d: 100, h: 14, c: 'slate', stroke: false, delay: .2 + i * .12, drop: 80});
+  sc.box({x: 22, y: y + 30, w: 40, d: 40, h: 40, z: 14, c: 'pink', delay: .55 + i * .12, drop: 70});
+  [[88, 22], [112, 22], [88, 50], [112, 50]].forEach(([dx, dy], j) => {
+    data.push(sc.box({x: dx, y: y + dy, w: 14, d: 14, h: 14, z: 14, c: cols[(i + j) % 4], sw: .8, delay: .85 + i * .1 + j * .04, drop: 40, phase: i + j}));
+  });
+});
+sc.rect({x: 260, y: 140, w: 150, d: 150, z: 0, sw: 1.2, delay: 1.1});
+sc.label({at: [150, 0, 7], side: 'r', len: 40, title: 'Developer laptops', sub: 'Agent with a shell', delay: .95});
+sc.label({at: [410, 215, 0], side: 'r', len: 40, title: 'Central record', sub: 'Does not exist', delay: 1.15});
+sc.run();
+// after settling, the transcript cubes fade in and out: the record keeps evaporating
+EW.loop(t => { if (t < 1.8) return; data.forEach((b, i) => { b.op = .35 + .65 * (.5 + .5 * Math.cos((t - 1.8) * 1.3 + i * .55)); }); });
+})();
+</script>
+</body>
+</html>

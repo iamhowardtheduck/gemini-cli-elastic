@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Detectors</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:44px;max-width:1120px}
+  .sub{font-size:16px;max-width:1000px}
+  .cols{position:absolute;left:72px;right:72px;top:250px;display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:22px;z-index:2}
+  .card{display:flex;flex-direction:column;gap:8px;padding:16px 18px}
+  .card .tag{color:var(--blue)}
+  .card h3{font:600 17px var(--sans);letter-spacing:-.3px}
+  .card p{font-size:12.5px;line-height:1.5;color:var(--char)}
+  .types{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+  .types span{font:500 10.5px var(--mono);border:1px solid var(--line);padding:3px 6px;color:var(--ink)}
+  .types span.o{border-color:#FF7E62;background:#FFF1ED}
+  .card.hot{border-color:var(--ink);box-shadow:8px 8px 0 #FF7E62}
+  .win{border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--blue)}
+  .win .bar{display:flex;gap:6px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--ink);font:500 10.5px var(--mono);color:var(--grey);text-transform:uppercase;letter-spacing:.05em}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:6px}
+  .win pre{margin:0;padding:10px 12px;font:400 11.5px/1.65 var(--mono);color:var(--char);white-space:pre-wrap}
+  .win pre .s{background:#FBE3E1;color:#9E241D}
+  .win pre .r{background:#FFF1ED;color:#B9472F;font-weight:600}
+  .win .lab{font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey);padding:8px 12px 0}
+  code{font-family:var(--mono);font-size:.92em}
+</style>
+</head>
+<body data-foot="Inference · Secret detectors">
+<div class="z">
+  <div class="eyebrow in1">Redaction · <b>default.yml, tag redact-secrets</b></div>
+  <h1 class="in2">Nineteen detector types run on every record. <span class="b">Only the type and length survive.</span></h1>
+  <p class="sub in3">Fixed-format tokens are matched by pattern. Free-form secrets are found next to a keyword, then checked for plausibility, so prose like "the password is wrong" is left alone.</p>
+</div>
+<div class="cols">
+  <div class="card in3"><span class="tag">13 · Known formats</span><h3>Pattern-matched tokens</h3><p>Vendor prefixes and fixed lengths, safe to match anywhere in the line.</p>
+    <div class="types"><span>aws_access_key</span><span>aws_secret_key</span><span>github_token</span><span>gitlab_token</span><span>slack_token</span><span>slack_webhook</span><span>anthropic_api_key</span><span>openai_api_key</span><span>google_api_key</span><span>stripe_key</span><span>private_key</span><span>jwt</span><span>auth_header</span></div></div>
+  <div class="card hot in4"><span class="tag">6 · In context</span><h3>Keyword-anchored secrets</h3><p>A keyword is found first, then a short anchored pattern reads the value after it.</p>
+    <div class="types"><span class="o">env_secret</span><span class="o">password</span><span class="o">cli_password</span><span class="o">basic_auth_cli</span><span class="o">sudo_password</span><span class="o">url_credentials</span></div>
+    <p><code>NAME=value</code> with PASSWORD, SECRET, TOKEN or API_KEY; 15 phrases like "password is"; <code>-u user:pass</code>; <code>echo x | sudo -S</code>; <code>scheme://user:pass@host</code>.</p></div>
+  <div class="win in5">
+    <div class="bar"><i></i><i></i><i></i><span>one record, before and after</span></div>
+    <div class="lab">what the developer typed</div>
+    <pre>the staging db password is <span class="s">h7#Kq2vLp9</span>!
+GEMINI_API_KEY=<span class="s">AIza<span></span>SyEXAMPLEnotARealKey000000000000000</span></pre>
+    <div class="lab">what Elasticsearch stores</div>
+    <pre>the staging db password is <span class="r">[REDACTED:password]</span>!
+GEMINI_API_KEY=<span class="r">[REDACTED:google_api_key]</span>
+<b>findings:</b> [{password, 10}, {google_api_key, 39}]</pre>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

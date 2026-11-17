@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Embedding</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:600px;line-height:1.06}
+  .sub{font-size:15.5px;max-width:580px;margin-top:14px}
+  .z{max-width:620px}
+  .facts{margin-top:18px;width:580px;border-top:1px solid var(--ink);border-collapse:collapse}
+  .facts td{padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top;font:400 12px var(--mono);color:var(--char);line-height:1.4}
+  .facts td:first-child{width:118px;font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--grey);padding-top:7px}
+  .facts b{color:var(--ink);font-weight:600}
+  .facts .p{color:var(--pink);font-weight:600}
+  .use{margin-top:14px;max-width:580px;display:flex;flex-direction:column;gap:6px}
+  .use p{font-size:13px;line-height:1.45;color:var(--char)}
+  .use b{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:690px;top:36px;width:560px;height:380px}
+  .win{position:absolute;left:716px;top:430px;width:492px;border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--blue);z-index:3}
+  .win .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--ink);font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:8px}
+  .win .body{padding:12px 14px;font:400 12px var(--mono);color:var(--char);line-height:1.5}
+  .win .q{color:var(--ink)}
+  .win .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  .win .a b{color:var(--blue)}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Models · Embedding">
+<div class="z">
+  <div class="eyebrow in1">Model 1 of 7 · <b>text embedding, Elastic Inference Service</b></div>
+  <h1 class="in2">One vector per prompt. <span class="b">Search by meaning, flag by meaning.</span></h1>
+  <p class="sub in3">The redacted human prompt is embedded through the <code>.jina-embeddings-v5-text-nano</code> inference endpoint. It runs on EIS, not on your ML nodes, and is the only model the <b>Enable ML inference</b> switch needs.</p>
+  <table class="facts in4"><tr><td>Endpoint</td><td><b>.jina-embeddings-v5-text-nano</b></td></tr><tr><td>Served by</td><td>Elastic Inference Service (EIS), billed per million input tokens</td></tr><tr><td>Input</td><td>human prompt only, after redaction, capped at 8,000 characters</td></tr><tr><td>Output</td><td><code>gemini_cli.prompt_embedding</code>: 768 dims, cosine, bbq_hnsw</td></tr><tr><td>Cost</td><td>60–70 ms per prompt (load-test p50); no ML node memory</td></tr></table>
+  <div class="use in5"><p><b>Semantic search.</b> kNN and hybrid search over every prompt, including the Security dashboard's free-text panel.</p><p><b>Semantic threat flags.</b> The same vector is compared with 29 threat phrases in 10 concepts. A score of 0.60 or more adds <code>security:semantic_&lt;concept&gt;</code> and <code>flagged: true</code>. No extra model call.</p></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 560 380"></svg>
+<div class="win in5"><div class="bar"><i></i><i></i><i></i><span>POST _inference/text_embedding/…</span></div><div class="body"><div class="q">{"input": ["please wipe the production database"]}</div><div class="a">Returns a <b>768-dimensional vector</b>. Held-out evaluation of the threat flags at 0.60: <b>9/12</b> malicious caught, <b>2/12</b> benign flagged.</div></div></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = EW.iso(document.getElementById('hero'), {ox: 230, oy: 110, s: .68});
+  sc.rect({x: -20, y: -10, w: 420, d: 200, z: 0, delay: .05, dash: '2 4'});
+  // the redacted human prompt
+  sc.box({x: 0, y: 40, w: 70, d: 110, h: 24, c: 'white', delay: .15, drop: 60});
+  sc.label({at: [0, 150, 12], side: 'l', len: 30, title: 'Prompt', sub: 'redacted', delay: 1.2});
+  sc.box({x: 110, y: 45, w: 80, d: 100, h: 78, c: 'blue', delay: .35, drop: 80, float: 3});
+  sc.label({at: [190, 45, 78], side: 'r', len: 46, title: 'EIS endpoint', sub: ['.jina-embeddings-', 'v5-text-nano'], raw: true, delay: 1.3});
+  const R = EW.rand(5);
+  for (let i = 0; i < 18; i++) { const h = 8 + Math.round(R() * 60);
+    sc.box({x: 240 + (i % 6) * 17, y: 40 + Math.floor(i / 6) * 38, w: 10, d: 26, h, c: i % 5 === 2 ? 'teal' : 'slate', stroke: false, delay: .6 + i * .03, drop: 40, snap: false}); }
+  sc.label({at: [342, 150, 0], side: 'r', len: 30, title: '768 dims', sub: 'prompt_embedding', delay: 1.5});
+
+  sc.run();
+})();
+</script>
+</body>
+</html>

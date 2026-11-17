@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cover</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:72px;line-height:.98;letter-spacing:-2.8px;margin-top:84px}
+  .sub{font-size:19px;max-width:520px;margin-top:26px}
+  .chips{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap;max-width:540px}
+  #hero{left:660px;top:0;width:620px;height:720px}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Load test">
+<div class="z">
+  <div class="eyebrow in1">Load test · <b>self-managed Elasticsearch 9.5.6</b></div>
+  <h1 class="in2">Gemini CLI<br>under load.<br><span class="b">Measured.</span></h1>
+  <p class="sub in3">How the Gemini CLI Transcripts integration behaves with classification on and off, run back to back with Claude Code on the same cluster: what ingests easily, what saturates, and how to size ML for it.</p>
+  <div class="chips in4"><span class="chip on">gemini_cli_transcripts 0.2.2</span><span class="chip">EIS embeddings</span><span class="chip">6 NLP models</span><span class="chip">loadgen.py --product gemini</span></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 720 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 640, y: 30, w: 640, h: 660, seed: 9, blobs: 6, thr: .5});
+  const sc = EW.iso(document.getElementById('hero'), {ox: 250, oy: 300, s: .72});
+  sc.rect({x: -30, y: -30, w: 330, d: 330, z: 0, delay: .1});
+  sc.box({x: 0, y: 0, w: 270, d: 270, h: 46, c: 'blue', delay: .15, drop: 120, order: -1000});
+  // the four classification steps of run 2
+  const steps = [40, 70, 110, 150];
+  steps.forEach((h, i) => sc.box({x: 22 + i * 40, y: 170, w: 30, d: 80, h, z: 46, c: i === 3 ? 'teal' : 'slate', stroke: false, delay: .5 + i * .08, drop: 90, order: 1}));
+  // ML: the classifier tier
+  sc.box({x: 190, y: 30, w: 60, d: 60, h: 60, z: 46, c: 'pink', delay: .9, drop: 90});
+  sc.box({x: 190, y: 100, w: 60, d: 50, h: 30, z: 46, c: 'orange', delay: 1.0, drop: 90});
+  sc.label({at: [250, 30, 46 + 60], side: 'r', len: 46, title: 'Zero-shot', sub: '82.7% of classifier time', delay: 1.4});
+  sc.label({at: [250, 150, 46], side: 'r', len: 100, title: '5 classifiers', sub: 'cheap per prompt', delay: 1.5});
+  sc.run();
+})();
+</script>
+</body>
+</html>

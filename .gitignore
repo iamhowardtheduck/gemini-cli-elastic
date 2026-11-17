@@ -1,0 +1,11 @@
+/build/
+__pycache__/
+*.pyc
+.env
+
+# fslides decks: build output and the locally installed kit brief; PDFs are published from docs/
+deck*/node_modules/
+deck*/_site/
+deck*/.fslides/
+deck*/.claude/
+deck*/*.pdf

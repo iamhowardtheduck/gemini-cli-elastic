@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gemini CLI Transcripts: Why it's awesome</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+h1{font-size:46px}
+.grid{position:absolute;left:72px;right:72px;top:236px;display:grid;grid-template-columns:repeat(3,1fr);column-gap:36px;z-index:2}
+.cell{display:grid;grid-template-columns:58px 1fr;gap:14px;padding:22px 0 24px;border-top:1px solid var(--ink)}
+.cell .tag{margin:4px 0 8px}
+.cell .cap{font-size:14px}
+.cube{width:54px;height:50px;overflow:visible}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Why it's awesome">
+<div class="z">
+  <div class="eyebrow in1">Why it's awesome</div>
+  <h1 class="in2">Built like a real Elastic integration. <span class="b">Not a log dump.</span></h1>
+</div>
+<div class="grid"><div class="cell in3"><svg class="cube" viewBox="0 0 60 56" data-c="teal" data-d="0.40"></svg><div><div class="tag">Zero-touch collection</div><p class="cap">No changes to Gemini CLI, no proxy, no API key interception. If Elastic Agent is on the machine, you have coverage.</p></div></div><div class="cell in3"><svg class="cube" viewBox="0 0 60 56" data-c="blue" data-d="0.52"></svg><div><div class="tag">Open standards</div><p class="cap">ECS plus OpenTelemetry <span class="mono">gen_ai.*</span>, so it correlates with the EDR, network and OTel data you already collect.</p></div></div><div class="cell in3"><svg class="cube" viewBox="0 0 60 56" data-c="orange" data-d="0.64"></svg><div><div class="tag">Costs you can trust</div><p class="cap">Only one version of each model message carries token usage, so tokens are summed directly, with no deduplication.</p></div></div><div class="cell in4"><svg class="cube" viewBox="0 0 60 56" data-c="slate" data-d="0.76"></svg><div><div class="tag">No duplicates</div><p class="cap">Messages are re-appended as they grow. <span class="mono">_id</span> hashes host, file, message ID and version, so resumes never double-count.</p></div></div><div class="cell in4"><svg class="cube" viewBox="0 0 60 56" data-c="pink" data-d="0.88"></svg><div><div class="tag">Fail-open ML</div><p class="cap">Off by default, one toggle to enable, never blocks ingest. Same deployed models as Claude Code Transcripts: one set serves both.</p></div></div><div class="cell in4"><svg class="cube" viewBox="0 0 60 56" data-c="ink" data-d="1.00"></svg><div><div class="tag">Generated, not forked</div><p class="cap"><span class="mono">tools/port_gemini.py</span> builds the pipelines, dashboards, rules and scanner from the Claude sources; <span class="mono">--check</span> reports drift.</p></div></div></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+document.querySelectorAll('svg.cube').forEach(s => {
+  const sc = EW.iso(s, {ox: 30, oy: 26, s: .6});
+  sc.box({x: 0, y: 0, w: 36, d: 36, h: 36, c: s.dataset.c, shadow: false, delay: +s.dataset.d, drop: 50});
+  sc.run();
+});
+})();
+</script>
+</body>
+</html>

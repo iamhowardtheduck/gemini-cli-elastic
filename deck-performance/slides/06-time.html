@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Where the time goes</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:580px}
+  .sub{font-size:15.5px;max-width:540px}
+  .math{margin-top:24px;display:flex;flex-direction:column;max-width:540px;border-top:1px solid var(--ink)}
+  .row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+  .row span{font-size:14px;color:var(--char)}
+  .row b{font:500 22px var(--sans);letter-spacing:-.6px;color:var(--ink)}
+  .row.total b{color:var(--blue);font-size:28px}
+  .viz{position:absolute;left:700px;top:118px;width:508px;z-index:2}
+  .viz .tag{margin-bottom:10px}
+  .share{display:flex;height:46px;border:1px solid var(--ink)}
+  .share i{display:flex;align-items:center;padding-left:10px;font:600 11px var(--mono);color:#fff;letter-spacing:.04em;transform-origin:left;animation:grow .8s cubic-bezier(.2,.7,.2,1) both;white-space:nowrap}
+  .share i.zs{background:var(--blue);width:82.7%;animation-delay:.5s}
+  .share i.sp{background:var(--slate);color:var(--ink);width:17.3%;padding-left:6px;animation-delay:.7s}
+  .lgd{display:flex;justify-content:space-between;margin-top:6px;font:400 10.5px var(--mono);color:var(--grey)}
+  .doc{margin-top:26px;padding-top:12px;border-top:1px dashed var(--line)}
+  .doc .tag{font-size:10px;color:var(--grey);font-weight:500}
+  .bar{display:grid;grid-template-columns:176px 1fr 50px;align-items:center;gap:10px;margin-bottom:6px;font:400 11.5px var(--mono);color:var(--char)}
+  .bar .tr{height:10px;background:var(--bg);position:relative}
+  .bar .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--slate);transform-origin:left;animation:grow 1s cubic-bezier(.2,.7,.2,1) both}
+  .bar.z .tr i{background:var(--blue)}
+  .bar.z{color:var(--ink)}
+  .bar span:last-child{text-align:right}
+  .sep{height:1px;background:var(--line);margin:8px 0 10px}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+</style>
+</head>
+<body data-foot="Load test · Where the time goes">
+<div class="z">
+  <div class="eyebrow in1">Where the time goes · <b>all classified Gemini CLI prompts, run 2</b></div>
+  <h1 class="in2">Five zero-shot passes are 82.7% of the time. <span class="b">Size that model first.</span></h1>
+  <p class="sub in3">Each classified prompt makes 11 ML calls: one embedding, five zero-shot passes and five single-pass models. The passes run one after another.</p>
+  <div class="math">
+    <div class="row in4"><span>Zero-shot, five passes, p50</span><b>23.4 s</b></div>
+    <div class="row in4"><span>Five single-pass models together, p50</span><b>2.8 s</b></div>
+    <div class="row in5"><span>Embedding (EIS), p50</span><b>≈60-70 ms</b></div>
+    <div class="row total in6"><span>Classifier time per prompt, p50</span><b>26.1 s</b></div>
+  </div>
+</div>
+<div class="viz in3">
+  <div class="tag">Share of classifier time</div>
+  <div class="share"><i class="zs">ZERO-SHOT · 82.7%</i><i class="sp">17.3%</i></div>
+  <div class="lgd"><span>5 zero-shot passes</span><span>5 single-pass models</span></div>
+  <div class="doc">
+    <div class="tag">One real Gemini CLI prompt with median timing: 25.5 s, seconds per call</div>
+    <div class="bar z"><span>zero-shot task</span><div class="tr"><i style="width:100%;animation-delay:.8s"></i></div><span>7.1</span></div>
+    <div class="bar z"><span>zero-shot security</span><div class="tr"><i style="width:75.7%;animation-delay:.85s"></i></div><span>5.4</span></div>
+    <div class="bar z"><span>zero-shot agent action</span><div class="tr"><i style="width:56.1%;animation-delay:.9s"></i></div><span>4.0</span></div>
+    <div class="bar z"><span>zero-shot moderation</span><div class="tr"><i style="width:42.9%;animation-delay:.95s"></i></div><span>3.0</span></div>
+    <div class="bar z"><span>zero-shot interaction</span><div class="tr"><i style="width:26.5%;animation-delay:1s"></i></div><span>1.9</span></div>
+    <div class="sep"></div>
+    <div class="bar"><span>prompt injection</span><div class="tr"><i style="width:36.5%;animation-delay:1.05s"></i></div><span>2.6</span></div>
+    <div class="bar"><span>jailbreak</span><div class="tr"><i style="width:6.7%;animation-delay:1.1s"></i></div><span>0.47</span></div>
+    <div class="bar"><span>NER</span><div class="tr"><i style="width:5.2%;animation-delay:1.1s"></i></div><span>0.37</span></div>
+    <div class="bar"><span>toxicity</span><div class="tr"><i style="width:5%;animation-delay:1.15s"></i></div><span>0.36</span></div>
+    <div class="bar"><span>offensive</span><div class="tr"><i style="width:4.6%;animation-delay:1.15s"></i></div><span>0.32</span></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

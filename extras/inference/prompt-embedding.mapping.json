@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "gemini_cli": {
+      "properties": {
+        "prompt_embedding": {
+          "type": "dense_vector",
+          "dims": 768,
+          "similarity": "cosine",
+          "index_options": {
+            "type": "bbq_hnsw"
+          }
+        }
+      }
+    }
+  }
+}

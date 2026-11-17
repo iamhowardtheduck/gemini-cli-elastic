@@ -1,0 +1,83 @@
+title: Gemini CLI transcripts
+type: logs
+dataset: gemini_cli.transcript
+streams:
+- input: filestream
+  title: Gemini CLI session transcripts
+  template_path: filestream.yml.hbs
+  description: One document per chat record (user prompts, model responses, tool calls and results) from ~/.gemini/tmp/<project>/chats.
+  vars:
+  - name: paths
+    type: text
+    title: Paths
+    description: Gemini CLI chat files. `**` also picks up subagent chats (`chats/<parent session>/<session>.jsonl`). `<project>` is a SHA-256 project hash in older releases and a short project name in newer ones; `*` matches both. Paths that do not exist on a host are ignored.
+    multi: true
+    required: true
+    show_user: true
+    default:
+    - C:\Users\*\.gemini\tmp\*\chats\**\*.jsonl
+    - /home/*/.gemini/tmp/*/chats/**/*.jsonl
+    - /root/.gemini/tmp/*/chats/**/*.jsonl
+    - /Users/*/.gemini/tmp/*/chats/**/*.jsonl
+  - name: exclude_files
+    type: text
+    title: Exclude files
+    description: Regular expressions of files to skip.
+    multi: true
+    required: false
+    show_user: false
+    default: []
+  - name: enable_inference
+    type: bool
+    title: Enable ML inference
+    description: Embed every human prompt (semantic search panels and rules) and, if 'Prompt classification' is on, classify it with the NLP models. Requires the models from the integration README to be deployed and the embedding mapping from `extras/gemini/setup.sh inference-mapping`. Off = no inference calls at ingest.
+    multi: false
+    required: false
+    show_user: true
+    default: false
+  - name: inference_classification
+    type: bool
+    title: Prompt classification
+    description: Only applies when ML inference is enabled. Runs the prompt-injection, jailbreak, toxicity, offensive, zero-shot and NER models (about 20-45 s of ML time per prompt). Turn off for embedding-only.
+    multi: false
+    required: false
+    show_user: true
+    default: true
+  - name: ignore_older
+    type: text
+    title: Ignore older
+    description: Skip files not modified within this duration.
+    multi: false
+    required: false
+    show_user: false
+    default: 720h
+  - name: message_max_bytes
+    type: integer
+    title: Maximum line size (bytes)
+    description: Lines with pasted images or large tool output exceed the 10 MB default.
+    multi: false
+    required: false
+    show_user: false
+    default: 20971520
+  - name: tags
+    type: text
+    title: Tags
+    description: Extra tags.
+    multi: true
+    required: false
+    show_user: false
+    default: []
+  - name: processors
+    type: yaml
+    title: Processors
+    description: Agent-side processors applied before the ingest pipeline.
+    multi: false
+    required: false
+    show_user: false
+  - name: custom
+    type: yaml
+    title: Custom configurations
+    description: Extra filestream options, for example `take_over` when migrating from another filestream input (see the repository README).
+    multi: false
+    required: false
+    show_user: false

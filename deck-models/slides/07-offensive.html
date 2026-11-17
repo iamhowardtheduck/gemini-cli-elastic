@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Offensive</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:42px;max-width:600px;line-height:1.06}
+  .sub{font-size:15.5px;max-width:580px;margin-top:14px}
+  .z{max-width:620px}
+  .facts{margin-top:18px;width:580px;border-top:1px solid var(--ink);border-collapse:collapse}
+  .facts td{padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top;font:400 12px var(--mono);color:var(--char);line-height:1.4}
+  .facts td:first-child{width:118px;font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--grey);padding-top:7px}
+  .facts b{color:var(--ink);font-weight:600}
+  .facts .p{color:var(--pink);font-weight:600}
+  .use{margin-top:14px;max-width:580px;display:flex;flex-direction:column;gap:6px}
+  .use p{font-size:13px;line-height:1.45;color:var(--char)}
+  .use b{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.92em}
+  #hero{left:690px;top:36px;width:560px;height:380px}
+  .win{position:absolute;left:716px;top:430px;width:492px;border:1px solid var(--ink);background:#fff;box-shadow:8px 8px 0 var(--orange);z-index:3}
+  .win .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--ink);font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+  .win .bar i{width:8px;height:8px;border:1px solid var(--ink);border-radius:50%;display:inline-block}
+  .win .bar span{margin-left:8px}
+  .win .body{padding:12px 14px;font:400 12px var(--mono);color:var(--char);line-height:1.5}
+  .win .q{color:var(--ink)}
+  .win .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  .win .a b{color:#D9532F}
+</style>
+</head>
+<body data-foot="Gemini CLI Transcripts · Models · Offensive">
+<div class="z">
+  <div class="eyebrow in1">Model 5 of 7 · <b>text classification</b></div>
+  <h1 class="in2">Offensive language. <span class="b">A second opinion next to toxicity.</span></h1>
+  <p class="sub in3">A RoBERTa model from Cardiff NLP, trained on tweets, scoring offensive against non-offensive text.</p>
+  <table class="facts in4"><tr><td>ES model ID</td><td><b>cardiffnlp__twitter-roberta-base-offensive</b></td></tr><tr><td>Hugging Face</td><td>cardiffnlp/twitter-roberta-base-offensive</td></tr><tr><td>Input length</td><td>512 tokens</td></tr><tr><td>Labels</td><td>non_offensive, <span class="p">offensive</span></td></tr><tr><td>Rule</td><td>offensive ≥ 0.80 → category <code>offensive</code>, flagged</td></tr><tr><td>Output</td><td><code>gemini_cli.prompt_classification.scores.offensive</code>, always kept</td></tr><tr><td>ML memory</td><td>about 1.3 GB at 1 allocation</td></tr></table>
+  <div class="use in5"><p><b>Corroborates moderation.</b> An offensive score of 0.35 or more lets the zero-shot moderation labels count, alongside the toxicity model.</p></div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 560 380"></svg>
+<div class="win in5"><div class="bar"><i></i><i></i><i></i><span>POST _ml/trained_models/…/_infer</span></div><div class="body"><div class="q">"you are a useless idiot and your code is garbage"</div><div class="a">predicted_value: <b>offensive</b>, probability about 0.94</div></div></div>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = EW.iso(document.getElementById('hero'), {ox: 230, oy: 110, s: .68});
+  sc.rect({x: -20, y: -10, w: 420, d: 200, z: 0, delay: .05, dash: '2 4'});
+  // the redacted human prompt
+  sc.box({x: 0, y: 40, w: 70, d: 110, h: 24, c: 'white', delay: .15, drop: 60});
+  sc.label({at: [0, 150, 12], side: 'l', len: 30, title: 'Prompt', sub: 'redacted', delay: 1.2});
+  sc.box({x: 110, y: 45, w: 80, d: 100, h: 78, c: 'orange', delay: .35, drop: 80, float: 3});
+  sc.label({at: [190, 45, 78], side: 'r', len: 46, title: 'twitter-roberta', sub: ['base-offensive'], raw: true, delay: 1.3});
+  sc.box({x: 250, y: 50, w: 34, d: 34, h: 22, c: 'slate', stroke: false, delay: .8, drop: 50});
+  sc.box({x: 250, y: 104, w: 34, d: 34, h: 58, c: 'orange', delay: .9, drop: 50});
+  sc.label({at: [284, 138, 0], side: 'r', len: 40, title: 'offensive', sub: 'offensive', raw: true, delay: 1.45});
+  sc.label({at: [284, 50, 22], side: 'r', len: 40, title: 'non_offensive', sub: 'benign label', raw: true, delay: 1.5});
+
+  sc.run();
+})();
+</script>
+</body>
+</html>
